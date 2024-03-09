@@ -2,9 +2,12 @@ extends Node2D
 
 @onready var showcase_player: _BaseCharacter = $ShowcasePlayer
 
-# Called when the node enters the scene tree for the first time.
+func change_player_looks():
+	showcase_player.select_random_looks()
+	showcase_player.init_all_animated_sprites()
+
 func _ready() -> void:
-	pass # Replace with function body.
+	change_player_looks()
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -14,3 +17,7 @@ func _process(_delta: float) -> void:
 	var direction = (mouse_position - player_position).normalized()
 	showcase_player.move_to(mouse_position - (direction * 50))
 	pass
+
+
+func _on_new_game_pressed() -> void:
+	change_player_looks()

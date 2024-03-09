@@ -7,19 +7,12 @@ var move_target: Vector2 = Vector2.ZERO;
 
 var max_speed = 300
 
-var SPRITESHEETS = {
+static var SPRITESHEETS = {
 	BODY = {
 		PLAYER_BODY_LIGHT = preload ("res://assets/characters/player/player-body-light.png"),
 		PLAYER_BODY_AMBER = preload ("res://assets/characters/player/player-body-amber.png"),
 		PLAYER_BODY_OLIVE = preload ("res://assets/characters/player/player-body-olive.png"),
 		PLAYER_BODY_BLACK = preload ("res://assets/characters/player/player-body-black.png"),
-
-		MONSTER_FLYING_WOLFMAN = preload ("res://assets/characters/flying-wolfman.png"),
-		MONSTER_FRANKENSTAIN = preload ("res://assets/characters/frankenstain.png"),
-		MONSTER_GREEN_PIGMAN = preload ("res://assets/characters/green-pigman.png"),
-		MONSTER_MINOTAUR = preload ("res://assets/characters/minotaur.png"),
-		MONSTER_RATMAN = preload ("res://assets/characters/ratman.png"),
-		MONSTER_WOLFMAN = preload ("res://assets/characters/wolfman.png"),
 	},
 
 	WOUND = {
@@ -101,6 +94,33 @@ var SPRITESHEETS = {
 		PLAYER_HAIR_SPIKED_REDHEAD = preload ("res://assets/characters/player/hair/player-hair-spiked-redhead.png"),
 		PLAYER_HAIR_SPIKED_WHITE = preload ("res://assets/characters/player/hair/player-hair-spiked-white.png"),
 	},
+
+	WEAPON = {
+		NONE = null,
+		CANE = preload ("res://assets/characters/weapons/cane.png"),
+		CLUB = preload ("res://assets/characters/weapons/club.png"),
+		CROSSBOW = preload ("res://assets/characters/weapons/crossbow.png"),
+		DRAGON_SPEAR = preload ("res://assets/characters/weapons/dragon-spear.png"),
+		FLAIL = preload ("res://assets/characters/weapons/flail.png"),
+		GLOWSWORD_BLUE = preload ("res://assets/characters/weapons/glowsword-blue.png"),
+		GLOWSWORD_RED = preload ("res://assets/characters/weapons/glowsword-red.png"),
+		HALBERD = preload ("res://assets/characters/weapons/halberd.png"),
+		LONGSWORD_2 = preload ("res://assets/characters/weapons/longsword2.png"),
+		LONGSWORD = preload ("res://assets/characters/weapons/longsword.png"),
+		MACE = preload ("res://assets/characters/weapons/mace.png"),
+		RAPIER = preload ("res://assets/characters/weapons/rapier.png"),
+		SABER = preload ("res://assets/characters/weapons/saber.png"),
+		SCIMITAR = preload ("res://assets/characters/weapons/scimitar.png"),
+		SCYTHE = preload ("res://assets/characters/weapons/scythe.png"),
+		SLINGSHOT = preload ("res://assets/characters/weapons/slingshot.png"),
+		SPEAR = preload ("res://assets/characters/weapons/spear.png"),
+		STAFF_DIAMOND = preload ("res://assets/characters/weapons/staff-diamond.png"),
+		STAFF_GNARLED = preload ("res://assets/characters/weapons/staff-gnarled.png"),
+		STAFF_LOOP = preload ("res://assets/characters/weapons/staff-loop.png"),
+		STAFF_S = preload ("res://assets/characters/weapons/staff-S.png"),
+		STAFF_SIMPLE = preload ("res://assets/characters/weapons/staff-simple.png"),
+		TRIDENT = preload ("res://assets/characters/weapons/trident.png"),
+	}
 }
 
 func spriteCoordinatesSequential(size: Vector2, from_coordinate: Vector2, count: int, offset=Vector2.ZERO):
@@ -116,10 +136,10 @@ func spriteCoordinatesNonSequential(size: Vector2, from_coordinate: Vector2, x_o
 	return {size = size, coordinates = coordinates, offset = offset}
 
 var ANIMATION_SPRITESHEET_COORDINATES = {
-	IDLE_UP = spriteCoordinatesSequential(Vector2(64, 64), Vector2(0, 0), 1),
-	IDLE_LEFT = spriteCoordinatesSequential(Vector2(64, 64), Vector2(0, 1), 1),
-	IDLE_DOWN = spriteCoordinatesSequential(Vector2(64, 64), Vector2(0, 2), 1),
-	IDLE_RIGHT = spriteCoordinatesSequential(Vector2(64, 64), Vector2(0, 3), 1),
+	IDLE_UP = spriteCoordinatesSequential(Vector2(64, 64), Vector2(0, 8), 1),
+	IDLE_LEFT = spriteCoordinatesSequential(Vector2(64, 64), Vector2(0, 9), 1),
+	IDLE_DOWN = spriteCoordinatesSequential(Vector2(64, 64), Vector2(0, 10), 1),
+	IDLE_RIGHT = spriteCoordinatesSequential(Vector2(64, 64), Vector2(0, 11), 1),
 
 	CAST_UP = spriteCoordinatesSequential(Vector2(64, 64), Vector2(0, 0), 7),
 	CAST_LEFT = spriteCoordinatesSequential(Vector2(64, 64), Vector2(0, 1), 7),
@@ -158,21 +178,58 @@ var ANIMATION_SPRITESHEET_COORDINATES = {
 	INTERACT_RIGHT = spriteCoordinatesNonSequential(Vector2(64, 64), Vector2(0, 7), [0, 1, 2, 4, 4, 2, 4, 2, 3, 1]),
 }
 
+@onready var rng = RandomNumberGenerator.new();
+
 @onready var body_animated_sprite_2d: AnimatedSprite2D = $CompositeAnimatedSprite/Body_AnimatedSprite2D
 @onready var hair_animated_sprite_2d: AnimatedSprite2D = $CompositeAnimatedSprite/Hair_AnimatedSprite2D
 @onready var shirt_animated_sprite_2d: AnimatedSprite2D = $CompositeAnimatedSprite/Shirt_AnimatedSprite2D
 @onready var pants_animated_sprite_2d: AnimatedSprite2D = $CompositeAnimatedSprite/Pants_AnimatedSprite2D
 @onready var belt_animated_sprite_2d: AnimatedSprite2D = $CompositeAnimatedSprite/Belt_AnimatedSprite2D
 @onready var wound_animated_sprite_2d: AnimatedSprite2D = $CompositeAnimatedSprite/Wound_AnimatedSprite2D
+@onready var weapon_animated_sprite_2d: AnimatedSprite2D = $CompositeAnimatedSprite/Weapon_AnimatedSprite2D
 
 var SELECTED_SPRITESHEETS = {
 	BODY = SPRITESHEETS.BODY.PLAYER_BODY_LIGHT,
-	WOUND = SPRITESHEETS.WOUND.PLAYER_WOUND_ARM,
-	BELT = SPRITESHEETS.BELT.PLAYER_CLOTHES_BELT_BLACK,
-	PANTS = SPRITESHEETS.PANTS.PLAYER_CLOTHES_PANTS_GREEN,
-	SHIRT = SPRITESHEETS.SHIRT.PLAYER_CLOTHES_SHIRT_LONGSLEEVE_BLUE,
-	HAIR = SPRITESHEETS.HAIR.PLAYER_HAIR_CURLY_REDHEAD,
+	WOUND = null,
+	BELT = null,
+	PANTS = null,
+	SHIRT = null,
+	HAIR = null,
+	WEAPON = null,
 }
+
+func select_random_looks():
+	var selected_spritesheets = {}
+
+	var possible_Bodies: Array = SPRITESHEETS.BODY.keys()
+	var random_BODY = possible_Bodies[rng.randi_range(0, possible_Bodies.size()-1)]
+	selected_spritesheets.BODY = SPRITESHEETS.BODY.get(random_BODY)
+
+	var possible_Wounds: Array = SPRITESHEETS.WOUND.keys()
+	var random_WOUND = possible_Wounds[rng.randi_range(0, possible_Wounds.size()-1)]
+	selected_spritesheets.WOUND = SPRITESHEETS.WOUND.get(random_WOUND)
+
+	var possible_Belts: Array = SPRITESHEETS.BELT.keys()
+	var random_BELT = possible_Belts[rng.randi_range(0, possible_Belts.size()-1)]
+	selected_spritesheets.BELT = SPRITESHEETS.BELT.get(random_BELT)
+
+	var possible_Pants: Array = SPRITESHEETS.PANTS.keys()
+	var random_PANTS = possible_Pants[rng.randi_range(0, possible_Pants.size()-1)]
+	selected_spritesheets.PANTS = SPRITESHEETS.PANTS.get(random_PANTS)
+
+	var possible_Shirts: Array = SPRITESHEETS.SHIRT.keys()
+	var random_SHIRT = possible_Shirts[rng.randi_range(0, possible_Shirts.size()-1)]
+	selected_spritesheets.SHIRT = SPRITESHEETS.SHIRT.get(random_SHIRT)
+
+	var possible_Hairs: Array = SPRITESHEETS.HAIR.keys()
+	var random_HAIR = possible_Hairs[rng.randi_range(0, possible_Hairs.size()-1)]
+	selected_spritesheets.HAIR = SPRITESHEETS.HAIR.get(random_HAIR)
+
+	var possible_Weapons: Array = SPRITESHEETS.WEAPON.keys()
+	var random_WEAPON = possible_Weapons[rng.randi_range(0, possible_Weapons.size()-1)]
+	selected_spritesheets.WEAPON = SPRITESHEETS.WEAPON.get(random_WEAPON)
+
+	SELECTED_SPRITESHEETS = selected_spritesheets;
 
 var previous_direction = "RIGHT"
 var previous_action = "IDLE"
@@ -227,6 +284,16 @@ func get_current_state(velocity_of_character, attempting_to_initiate_action, for
 
 	return {action = action, direction = direction, animation = action + "_" + direction}
 
+func init_all_animated_sprites():
+	init_animated_sprite(body_animated_sprite_2d, SELECTED_SPRITESHEETS.BODY, ANIMATION_SPRITESHEET_COORDINATES)
+	init_animated_sprite(wound_animated_sprite_2d, SELECTED_SPRITESHEETS.WOUND, ANIMATION_SPRITESHEET_COORDINATES)
+	init_animated_sprite(belt_animated_sprite_2d, SELECTED_SPRITESHEETS.BELT, ANIMATION_SPRITESHEET_COORDINATES)
+	init_animated_sprite(pants_animated_sprite_2d, SELECTED_SPRITESHEETS.PANTS, ANIMATION_SPRITESHEET_COORDINATES)
+	init_animated_sprite(shirt_animated_sprite_2d, SELECTED_SPRITESHEETS.SHIRT, ANIMATION_SPRITESHEET_COORDINATES)
+	init_animated_sprite(hair_animated_sprite_2d, SELECTED_SPRITESHEETS.HAIR, ANIMATION_SPRITESHEET_COORDINATES)
+	init_animated_sprite(weapon_animated_sprite_2d, SELECTED_SPRITESHEETS.WEAPON, ANIMATION_SPRITESHEET_COORDINATES)
+	play_animation('WALK_LEFT')
+
 func init_animated_sprite(animated_sprite: AnimatedSprite2D, sprite_sheet: Texture2D, animations_coordinates: Dictionary):
 	# cleanup
 	for i in animated_sprite.sprite_frames.animations:
@@ -256,19 +323,13 @@ func play_animation(animation_name: StringName):
 	pants_animated_sprite_2d.play(animation_name)
 	shirt_animated_sprite_2d.play(animation_name)
 	hair_animated_sprite_2d.play(animation_name)
+	weapon_animated_sprite_2d.play(animation_name)
 
 func move_to(new_target: Vector2):
 	self.move_target = new_target
 
 func _ready() -> void:
-	print(SELECTED_SPRITESHEETS.BODY)
-	init_animated_sprite(body_animated_sprite_2d, SELECTED_SPRITESHEETS.BODY, ANIMATION_SPRITESHEET_COORDINATES)
-	init_animated_sprite(wound_animated_sprite_2d, SELECTED_SPRITESHEETS.WOUND, ANIMATION_SPRITESHEET_COORDINATES)
-	init_animated_sprite(belt_animated_sprite_2d, SELECTED_SPRITESHEETS.BELT, ANIMATION_SPRITESHEET_COORDINATES)
-	init_animated_sprite(pants_animated_sprite_2d, SELECTED_SPRITESHEETS.PANTS, ANIMATION_SPRITESHEET_COORDINATES)
-	init_animated_sprite(shirt_animated_sprite_2d, SELECTED_SPRITESHEETS.SHIRT, ANIMATION_SPRITESHEET_COORDINATES)
-	init_animated_sprite(hair_animated_sprite_2d, SELECTED_SPRITESHEETS.HAIR, ANIMATION_SPRITESHEET_COORDINATES)
-	play_animation('WALK_LEFT')
+	init_all_animated_sprites()
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(_delta: float) -> void:

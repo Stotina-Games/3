@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://vbbscy6ty36h"]
+[gd_scene load_steps=11 format=3 uid="uid://vbbscy6ty36h"]
 
 [ext_resource type="Script" path="res://characters/_base_character.gd" id="1_v0er0"]
 
@@ -19,6 +19,8 @@ size = Vector2(30, 47)
 [sub_resource type="SpriteFrames" id="SpriteFrames_rxmxx"]
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_v3jpp"]
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_x8o60"]
 
 [node name="_BaseCharacter" type="CharacterBody2D"]
 script = ExtResource("1_v0er0")
@@ -52,3 +54,6 @@ sprite_frames = SubResource("SpriteFrames_rxmxx")
 
 [node name="Wound_AnimatedSprite2D" type="AnimatedSprite2D" parent="CompositeAnimatedSprite"]
 sprite_frames = SubResource("SpriteFrames_v3jpp")
+
+[node name="Weapon_AnimatedSprite2D" type="AnimatedSprite2D" parent="CompositeAnimatedSprite"]
+sprite_frames = SubResource("SpriteFrames_x8o60")
