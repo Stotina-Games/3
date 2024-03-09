@@ -1,0 +1,54 @@
+[gd_scene load_steps=10 format=3 uid="uid://vbbscy6ty36h"]
+
+[ext_resource type="Script" path="res://characters/_base_character.gd" id="1_v0er0"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_kxbsm"]
+size = Vector2(25, 25)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_n6ldg"]
+size = Vector2(30, 47)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_d12bj"]
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_un83p"]
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_psf56"]
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_lro7y"]
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_rxmxx"]
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_v3jpp"]
+
+[node name="_BaseCharacter" type="CharacterBody2D"]
+script = ExtResource("1_v0er0")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, 18)
+shape = SubResource("RectangleShape2D_kxbsm")
+
+[node name="HurtBoxArea" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HurtBoxArea"]
+position = Vector2(0, 6.5)
+shape = SubResource("RectangleShape2D_n6ldg")
+
+[node name="CompositeAnimatedSprite" type="Node2D" parent="."]
+
+[node name="Body_AnimatedSprite2D" type="AnimatedSprite2D" parent="CompositeAnimatedSprite"]
+sprite_frames = SubResource("SpriteFrames_d12bj")
+
+[node name="Hair_AnimatedSprite2D" type="AnimatedSprite2D" parent="CompositeAnimatedSprite"]
+sprite_frames = SubResource("SpriteFrames_un83p")
+
+[node name="Shirt_AnimatedSprite2D" type="AnimatedSprite2D" parent="CompositeAnimatedSprite"]
+sprite_frames = SubResource("SpriteFrames_psf56")
+
+[node name="Pants_AnimatedSprite2D" type="AnimatedSprite2D" parent="CompositeAnimatedSprite"]
+sprite_frames = SubResource("SpriteFrames_lro7y")
+
+[node name="Belt_AnimatedSprite2D" type="AnimatedSprite2D" parent="CompositeAnimatedSprite"]
+sprite_frames = SubResource("SpriteFrames_rxmxx")
+
+[node name="Wound_AnimatedSprite2D" type="AnimatedSprite2D" parent="CompositeAnimatedSprite"]
+sprite_frames = SubResource("SpriteFrames_v3jpp")
