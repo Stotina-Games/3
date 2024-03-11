@@ -1,7 +1,9 @@
-[gd_scene load_steps=3 format=3 uid="uid://bju1kdd31tps2"]
+[gd_scene load_steps=5 format=3 uid="uid://bju1kdd31tps2"]
 
 [ext_resource type="PackedScene" uid="uid://vbbscy6ty36h" path="res://characters/_base_character.tscn" id="1_0mll2"]
 [ext_resource type="Script" path="res://scenes/main.gd" id="1_k47ek"]
+[ext_resource type="Script" path="res://characters/_base_ai_character.gd" id="3_4a1ng"]
+[ext_resource type="PackedScene" uid="uid://dh70fxbxh8uxo" path="res://characters/_base_ai_character.tscn" id="4_e13s8"]
 
 [node name="main" type="Node2D"]
 script = ExtResource("1_k47ek")
@@ -30,5 +32,15 @@ text = "SETTINGS"
 
 [node name="ShowcasePlayer" parent="." instance=ExtResource("1_0mll2")]
 position = Vector2(666, 436)
+script = ExtResource("3_4a1ng")
+
+[node name="ShowcaseEnemy_1" parent="." instance=ExtResource("4_e13s8")]
+position = Vector2(1156, 293)
+
+[node name="ShowcaseEnemy_2" parent="." instance=ExtResource("4_e13s8")]
+position = Vector2(1017, 171)
+
+[node name="ShowcaseEnemy_3" parent="." instance=ExtResource("4_e13s8")]
+position = Vector2(1141, 605)
 
 [connection signal="pressed" from="new_game" to="." method="_on_new_game_pressed"]

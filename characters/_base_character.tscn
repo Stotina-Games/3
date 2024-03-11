@@ -8,19 +8,19 @@ size = Vector2(25, 25)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_n6ldg"]
 size = Vector2(30, 47)
 
-[sub_resource type="SpriteFrames" id="SpriteFrames_d12bj"]
+[sub_resource type="SpriteFrames" id="SpriteFrames_fdsme"]
 
-[sub_resource type="SpriteFrames" id="SpriteFrames_un83p"]
+[sub_resource type="SpriteFrames" id="SpriteFrames_2guqs"]
 
-[sub_resource type="SpriteFrames" id="SpriteFrames_psf56"]
+[sub_resource type="SpriteFrames" id="SpriteFrames_n8fer"]
 
-[sub_resource type="SpriteFrames" id="SpriteFrames_lro7y"]
+[sub_resource type="SpriteFrames" id="SpriteFrames_xtlo6"]
 
-[sub_resource type="SpriteFrames" id="SpriteFrames_rxmxx"]
+[sub_resource type="SpriteFrames" id="SpriteFrames_lut7r"]
 
-[sub_resource type="SpriteFrames" id="SpriteFrames_v3jpp"]
+[sub_resource type="SpriteFrames" id="SpriteFrames_vvcv3"]
 
-[sub_resource type="SpriteFrames" id="SpriteFrames_x8o60"]
+[sub_resource type="SpriteFrames" id="SpriteFrames_auap2"]
 
 [node name="_BaseCharacter" type="CharacterBody2D"]
 script = ExtResource("1_v0er0")
@@ -37,23 +37,23 @@ shape = SubResource("RectangleShape2D_n6ldg")
 
 [node name="CompositeAnimatedSprite" type="Node2D" parent="."]
 
+[node name="Weapon_AnimatedSprite2D" type="AnimatedSprite2D" parent="CompositeAnimatedSprite"]
+sprite_frames = SubResource("SpriteFrames_fdsme")
+
 [node name="Body_AnimatedSprite2D" type="AnimatedSprite2D" parent="CompositeAnimatedSprite"]
-sprite_frames = SubResource("SpriteFrames_d12bj")
+sprite_frames = SubResource("SpriteFrames_2guqs")
 
 [node name="Hair_AnimatedSprite2D" type="AnimatedSprite2D" parent="CompositeAnimatedSprite"]
-sprite_frames = SubResource("SpriteFrames_un83p")
+sprite_frames = SubResource("SpriteFrames_n8fer")
 
 [node name="Shirt_AnimatedSprite2D" type="AnimatedSprite2D" parent="CompositeAnimatedSprite"]
-sprite_frames = SubResource("SpriteFrames_psf56")
+sprite_frames = SubResource("SpriteFrames_xtlo6")
 
 [node name="Pants_AnimatedSprite2D" type="AnimatedSprite2D" parent="CompositeAnimatedSprite"]
-sprite_frames = SubResource("SpriteFrames_lro7y")
+sprite_frames = SubResource("SpriteFrames_lut7r")
 
 [node name="Belt_AnimatedSprite2D" type="AnimatedSprite2D" parent="CompositeAnimatedSprite"]
-sprite_frames = SubResource("SpriteFrames_rxmxx")
+sprite_frames = SubResource("SpriteFrames_vvcv3")
 
 [node name="Wound_AnimatedSprite2D" type="AnimatedSprite2D" parent="CompositeAnimatedSprite"]
-sprite_frames = SubResource("SpriteFrames_v3jpp")
-
-[node name="Weapon_AnimatedSprite2D" type="AnimatedSprite2D" parent="CompositeAnimatedSprite"]
-sprite_frames = SubResource("SpriteFrames_x8o60")
+sprite_frames = SubResource("SpriteFrames_auap2")

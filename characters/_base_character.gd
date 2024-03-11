@@ -1,11 +1,21 @@
 class_name _BaseCharacter
 extends CharacterBody2D
 
-@onready var collision_shape_2d: CollisionShape2D = $CollisionShape2D
+enum CHARACTER_ACTION {
+	UNKNOWN,
+	IDLE,
+	CAST,
+	TRUST,
+	WALK,
+	SLASH,
+	SHOOT,
+	DIE,
+	LAY_ON_GROUND,
+	GET_UP,
+	INTERACT,
+}
 
-var move_target: Vector2 = Vector2.ZERO;
-
-var max_speed = 300
+enum CHARACTER_DIRECTION {UP, DOWN, LEFT, RIGHT}
 
 static var SPRITESHEETS = {
 	BODY = {
@@ -123,60 +133,9 @@ static var SPRITESHEETS = {
 	}
 }
 
-func spriteCoordinatesSequential(size: Vector2, from_coordinate: Vector2, count: int, offset=Vector2.ZERO):
-	var coordinates: Array[Vector2] = [from_coordinate];
-	for n in range(1, count):
-		coordinates.push_back(Vector2(from_coordinate.x + n, from_coordinate.y))
-	return {size = size, coordinates = coordinates, offset = offset}
+@onready var move_target: Vector2 = Vector2.ZERO;
 
-func spriteCoordinatesNonSequential(size: Vector2, from_coordinate: Vector2, x_offsets: Array[int], offset=Vector2.ZERO):
-	var coordinates: Array[Vector2] = [];
-	for n in x_offsets:
-		coordinates.push_back(Vector2(from_coordinate.x + n, from_coordinate.y))
-	return {size = size, coordinates = coordinates, offset = offset}
-
-var ANIMATION_SPRITESHEET_COORDINATES = {
-	IDLE_UP = spriteCoordinatesSequential(Vector2(64, 64), Vector2(0, 8), 1),
-	IDLE_LEFT = spriteCoordinatesSequential(Vector2(64, 64), Vector2(0, 9), 1),
-	IDLE_DOWN = spriteCoordinatesSequential(Vector2(64, 64), Vector2(0, 10), 1),
-	IDLE_RIGHT = spriteCoordinatesSequential(Vector2(64, 64), Vector2(0, 11), 1),
-
-	CAST_UP = spriteCoordinatesSequential(Vector2(64, 64), Vector2(0, 0), 7),
-	CAST_LEFT = spriteCoordinatesSequential(Vector2(64, 64), Vector2(0, 1), 7),
-	CAST_DOWN = spriteCoordinatesSequential(Vector2(64, 64), Vector2(0, 2), 7),
-	CAST_RIGHT = spriteCoordinatesSequential(Vector2(64, 64), Vector2(0, 3), 7),
-
-	TRUST_UP = spriteCoordinatesSequential(Vector2(64, 64), Vector2(0, 4), 8),
-	TRUST_LEFT = spriteCoordinatesSequential(Vector2(64, 64), Vector2(0, 5), 8),
-	TRUST_DOWN = spriteCoordinatesSequential(Vector2(64, 64), Vector2(0, 6), 8),
-	TRUST_RIGHT = spriteCoordinatesSequential(Vector2(64, 64), Vector2(0, 7), 8),
-
-	WALK_UP = spriteCoordinatesSequential(Vector2(64, 64), Vector2(0, 8), 9),
-	WALK_LEFT = spriteCoordinatesSequential(Vector2(64, 64), Vector2(0, 9), 9),
-	WALK_DOWN = spriteCoordinatesSequential(Vector2(64, 64), Vector2(0, 10), 9),
-	WALK_RIGHT = spriteCoordinatesSequential(Vector2(64, 64), Vector2(0, 11), 9),
-
-	SLASH_UP = spriteCoordinatesSequential(Vector2(64, 64), Vector2(0, 12), 6),
-	SLASH_LEFT = spriteCoordinatesSequential(Vector2(64, 64), Vector2(0, 13), 6),
-	SLASH_DOWN = spriteCoordinatesSequential(Vector2(64, 64), Vector2(0, 14), 6),
-	SLASH_RIGHT = spriteCoordinatesSequential(Vector2(64, 64), Vector2(0, 15), 6),
-
-	SHOOT_UP = spriteCoordinatesSequential(Vector2(64, 64), Vector2(0, 16), 13),
-	SHOOT_LEFT = spriteCoordinatesSequential(Vector2(64, 64), Vector2(0, 17), 13),
-	SHOOT_DOWN = spriteCoordinatesSequential(Vector2(64, 64), Vector2(0, 18), 13),
-	SHOOT_RIGHT = spriteCoordinatesSequential(Vector2(64, 64), Vector2(0, 19), 13),
-
-	DIE_DOWN = spriteCoordinatesSequential(Vector2(64, 64), Vector2(0, 20), 6),
-
-	LAY_ON_GROUND_DOWN = spriteCoordinatesSequential(Vector2(64, 64), Vector2(5, 20), 1),
-
-	GET_UP_DOWN = spriteCoordinatesNonSequential(Vector2(64, 64), Vector2(0, 20), [5, 4, 5, 4, 3, 2, 1, 0]),
-
-	INTERACT_UP = spriteCoordinatesNonSequential(Vector2(64, 64), Vector2(0, 4), [0, 1, 2, 4, 4, 2, 4, 2, 3, 1]),
-	INTERACT_LEFT = spriteCoordinatesNonSequential(Vector2(64, 64), Vector2(0, 5), [0, 1, 2, 4, 4, 2, 4, 2, 3, 1]),
-	INTERACT_DOWN = spriteCoordinatesNonSequential(Vector2(64, 64), Vector2(0, 6), [0, 1, 2, 4, 4, 2, 4, 2, 3, 1]),
-	INTERACT_RIGHT = spriteCoordinatesNonSequential(Vector2(64, 64), Vector2(0, 7), [0, 1, 2, 4, 4, 2, 4, 2, 3, 1]),
-}
+@onready var max_speed: int = 200
 
 @onready var rng = RandomNumberGenerator.new();
 
@@ -188,116 +147,194 @@ var ANIMATION_SPRITESHEET_COORDINATES = {
 @onready var wound_animated_sprite_2d: AnimatedSprite2D = $CompositeAnimatedSprite/Wound_AnimatedSprite2D
 @onready var weapon_animated_sprite_2d: AnimatedSprite2D = $CompositeAnimatedSprite/Weapon_AnimatedSprite2D
 
-var SELECTED_SPRITESHEETS = {
-	BODY = SPRITESHEETS.BODY.PLAYER_BODY_LIGHT,
-	WOUND = null,
-	BELT = null,
-	PANTS = null,
-	SHIRT = null,
-	HAIR = null,
-	WEAPON = null,
+@onready var selected_spritesheet_body: Texture2D
+@onready var selected_spritesheet_wound: Texture2D
+@onready var selected_spritesheet_belt: Texture2D
+@onready var selected_spritesheet_pants: Texture2D
+@onready var selected_spritesheet_shirt: Texture2D
+@onready var selected_spritesheet_hair: Texture2D
+@onready var selected_spritesheet_weapon: Texture2D
+
+@onready var animation_spritesheet_coordinates = {
+	IDLE_UP = _BaseCharacter.sprite_coordinates_sequential(Vector2(64, 64), Vector2(0, 8), 1),
+	IDLE_LEFT = _BaseCharacter.sprite_coordinates_sequential(Vector2(64, 64), Vector2(0, 9), 1),
+	IDLE_DOWN = _BaseCharacter.sprite_coordinates_sequential(Vector2(64, 64), Vector2(0, 10), 1),
+	IDLE_RIGHT = _BaseCharacter.sprite_coordinates_sequential(Vector2(64, 64), Vector2(0, 11), 1),
+
+	CAST_UP = _BaseCharacter.sprite_coordinates_sequential(Vector2(64, 64), Vector2(0, 0), 7),
+	CAST_LEFT = _BaseCharacter.sprite_coordinates_sequential(Vector2(64, 64), Vector2(0, 1), 7),
+	CAST_DOWN = _BaseCharacter.sprite_coordinates_sequential(Vector2(64, 64), Vector2(0, 2), 7),
+	CAST_RIGHT = _BaseCharacter.sprite_coordinates_sequential(Vector2(64, 64), Vector2(0, 3), 7),
+
+	TRUST_UP = _BaseCharacter.sprite_coordinates_sequential(Vector2(64, 64), Vector2(0, 4), 8),
+	TRUST_LEFT = _BaseCharacter.sprite_coordinates_sequential(Vector2(64, 64), Vector2(0, 5), 8),
+	TRUST_DOWN = _BaseCharacter.sprite_coordinates_sequential(Vector2(64, 64), Vector2(0, 6), 8),
+	TRUST_RIGHT = _BaseCharacter.sprite_coordinates_sequential(Vector2(64, 64), Vector2(0, 7), 8),
+
+	WALK_UP = _BaseCharacter.sprite_coordinates_sequential(Vector2(64, 64), Vector2(0, 8), 9),
+	WALK_LEFT = _BaseCharacter.sprite_coordinates_sequential(Vector2(64, 64), Vector2(0, 9), 9),
+	WALK_DOWN = _BaseCharacter.sprite_coordinates_sequential(Vector2(64, 64), Vector2(0, 10), 9),
+	WALK_RIGHT = _BaseCharacter.sprite_coordinates_sequential(Vector2(64, 64), Vector2(0, 11), 9),
+
+	SLASH_UP = _BaseCharacter.sprite_coordinates_sequential(Vector2(64, 64), Vector2(0, 12), 6),
+	SLASH_LEFT = _BaseCharacter.sprite_coordinates_sequential(Vector2(64, 64), Vector2(0, 13), 6),
+	SLASH_DOWN = _BaseCharacter.sprite_coordinates_sequential(Vector2(64, 64), Vector2(0, 14), 6),
+	SLASH_RIGHT = _BaseCharacter.sprite_coordinates_sequential(Vector2(64, 64), Vector2(0, 15), 6),
+
+	SHOOT_UP = _BaseCharacter.sprite_coordinates_sequential(Vector2(64, 64), Vector2(0, 16), 13),
+	SHOOT_LEFT = _BaseCharacter.sprite_coordinates_sequential(Vector2(64, 64), Vector2(0, 17), 13),
+	SHOOT_DOWN = _BaseCharacter.sprite_coordinates_sequential(Vector2(64, 64), Vector2(0, 18), 13),
+	SHOOT_RIGHT = _BaseCharacter.sprite_coordinates_sequential(Vector2(64, 64), Vector2(0, 19), 13),
+
+	DIE_DOWN = _BaseCharacter.sprite_coordinates_sequential(Vector2(64, 64), Vector2(0, 20), 6),
+
+	LAY_ON_GROUND_DOWN = _BaseCharacter.sprite_coordinates_sequential(Vector2(64, 64), Vector2(5, 20), 1),
+
+	GET_UP_DOWN = _BaseCharacter.sprite_coordinates_non_sequential(Vector2(64, 64), Vector2(0, 20), [5, 4, 5, 4, 3, 2, 1, 0]),
+
+	INTERACT_UP = _BaseCharacter.sprite_coordinates_non_sequential(Vector2(64, 64), Vector2(0, 4), [0, 1, 2, 4, 4, 2, 4, 2, 3, 1]),
+	INTERACT_LEFT = _BaseCharacter.sprite_coordinates_non_sequential(Vector2(64, 64), Vector2(0, 5), [0, 1, 2, 4, 4, 2, 4, 2, 3, 1]),
+	INTERACT_DOWN = _BaseCharacter.sprite_coordinates_non_sequential(Vector2(64, 64), Vector2(0, 6), [0, 1, 2, 4, 4, 2, 4, 2, 3, 1]),
+	INTERACT_RIGHT = _BaseCharacter.sprite_coordinates_non_sequential(Vector2(64, 64), Vector2(0, 7), [0, 1, 2, 4, 4, 2, 4, 2, 3, 1]),
 }
 
-func select_random_looks():
-	var selected_spritesheets = {}
+@onready var previous_direction: CHARACTER_DIRECTION = CHARACTER_DIRECTION.RIGHT
+@onready var previous_action: CHARACTER_ACTION = CHARACTER_ACTION.IDLE
 
-	var possible_Bodies: Array = SPRITESHEETS.BODY.keys()
-	var random_BODY = possible_Bodies[rng.randi_range(0, possible_Bodies.size()-1)]
-	selected_spritesheets.BODY = SPRITESHEETS.BODY.get(random_BODY)
-
-	var possible_Wounds: Array = SPRITESHEETS.WOUND.keys()
-	var random_WOUND = possible_Wounds[rng.randi_range(0, possible_Wounds.size()-1)]
-	selected_spritesheets.WOUND = SPRITESHEETS.WOUND.get(random_WOUND)
-
-	var possible_Belts: Array = SPRITESHEETS.BELT.keys()
-	var random_BELT = possible_Belts[rng.randi_range(0, possible_Belts.size()-1)]
-	selected_spritesheets.BELT = SPRITESHEETS.BELT.get(random_BELT)
-
-	var possible_Pants: Array = SPRITESHEETS.PANTS.keys()
-	var random_PANTS = possible_Pants[rng.randi_range(0, possible_Pants.size()-1)]
-	selected_spritesheets.PANTS = SPRITESHEETS.PANTS.get(random_PANTS)
-
-	var possible_Shirts: Array = SPRITESHEETS.SHIRT.keys()
-	var random_SHIRT = possible_Shirts[rng.randi_range(0, possible_Shirts.size()-1)]
-	selected_spritesheets.SHIRT = SPRITESHEETS.SHIRT.get(random_SHIRT)
-
-	var possible_Hairs: Array = SPRITESHEETS.HAIR.keys()
-	var random_HAIR = possible_Hairs[rng.randi_range(0, possible_Hairs.size()-1)]
-	selected_spritesheets.HAIR = SPRITESHEETS.HAIR.get(random_HAIR)
-
-	var possible_Weapons: Array = SPRITESHEETS.WEAPON.keys()
-	var random_WEAPON = possible_Weapons[rng.randi_range(0, possible_Weapons.size()-1)]
-	selected_spritesheets.WEAPON = SPRITESHEETS.WEAPON.get(random_WEAPON)
-
-	SELECTED_SPRITESHEETS = selected_spritesheets;
-
-var previous_direction = "RIGHT"
-var previous_action = "IDLE"
-func get_current_state(velocity_of_character, attempting_to_initiate_action, forced_action=""):
-	var direction = previous_direction;
-	var action = previous_action;
+func run_state_machine(velocity_of_character, attempting_to_initiate_action: CHARACTER_ACTION=CHARACTER_ACTION.UNKNOWN, forced_action=CHARACTER_ACTION.UNKNOWN):
+	var direction: CHARACTER_DIRECTION = previous_direction;
+	var action: CHARACTER_ACTION = previous_action;
 
 	var absVelocity = velocity_of_character.abs();
 	if absVelocity.x > absVelocity.y:
 		if velocity_of_character.x > 0:
-			direction = "RIGHT"
-			action = "WALK"
+			direction = CHARACTER_DIRECTION.RIGHT
+			action = CHARACTER_ACTION.WALK
 		elif velocity_of_character.x < 0:
-			direction = "LEFT"
-			action = "WALK"
+			direction = CHARACTER_DIRECTION.LEFT
+			action = CHARACTER_ACTION.WALK
 	elif absVelocity.x < absVelocity.y:
 		if velocity_of_character.y > 0:
-			direction = "DOWN"
-			action = "WALK"
+			direction = CHARACTER_DIRECTION.DOWN
+			action = CHARACTER_ACTION.WALK
 		elif velocity_of_character.y < 0:
-			direction = "UP"
-			action = "WALK"
+			direction = CHARACTER_DIRECTION.UP
+			action = CHARACTER_ACTION.WALK
 	else:
 		direction = previous_direction;
-		action = "IDLE"
+		action = CHARACTER_ACTION.IDLE
 
-	var is_able_to_initiate_action = previous_direction == 'IDLE' or previous_direction == "WALK";
+	var is_able_to_initiate_action = previous_action == CHARACTER_ACTION.IDLE or previous_action == CHARACTER_ACTION.WALK;
 
 	if is_able_to_initiate_action:
-		if (attempting_to_initiate_action == 'CAST'):
-			action = 'CAST'
-		elif (attempting_to_initiate_action == 'TRUST'):
-			action = 'TRUST'
-		elif (attempting_to_initiate_action == 'SLASH'):
-			action = 'SLASH'
-		elif (attempting_to_initiate_action == 'SHOOT'):
-			action = 'SHOOT'
-		elif (attempting_to_initiate_action == 'INTERACT'):
-			action = 'INTERACT'
+		if (attempting_to_initiate_action == CHARACTER_ACTION.CAST):
+			action = CHARACTER_ACTION.CAST
+		elif (attempting_to_initiate_action == CHARACTER_ACTION.TRUST):
+			action = CHARACTER_ACTION.TRUST
+		elif (attempting_to_initiate_action == CHARACTER_ACTION.SLASH):
+			action = CHARACTER_ACTION.SLASH
+		elif (attempting_to_initiate_action == CHARACTER_ACTION.SHOOT):
+			action = CHARACTER_ACTION.SHOOT
+		elif (attempting_to_initiate_action == CHARACTER_ACTION.INTERACT):
+			action = CHARACTER_ACTION.INTERACT
 
-	if forced_action != "":
+	if forced_action != CHARACTER_ACTION.UNKNOWN:
 		action = forced_action
 
-	if action == 'DIE'||action == 'LAY_ON_GROUND'||action == 'GET_UP':
-		direction = "DOWN"
+	if action == CHARACTER_ACTION.DIE or action == CHARACTER_ACTION.LAY_ON_GROUND or action == CHARACTER_ACTION.GET_UP:
+		direction = CHARACTER_DIRECTION.DOWN
 
-	if previous_action != action or previous_direction != direction:
-		print("Action Change: " + action + "_" + direction + " ---> " + str(absVelocity));
+	var is_new_action = action != previous_action
+	var is_new_direction = direction != previous_direction
 
 	previous_action = action
 	previous_direction = direction
+	var animation = CHARACTER_ACTION.keys()[action] + "_" + CHARACTER_DIRECTION.keys()[direction];
 
-	return {action = action, direction = direction, animation = action + "_" + direction}
+	var determined_state = {
+		action = action,
+		direction = direction,
+		animation = animation,
+		is_new_action = is_new_action,
+		is_new_direction = is_new_direction,
+	};
+
+	if is_new_action:
+		on_new_action(determined_state)
+
+	if is_new_direction:
+		on_new_direction(determined_state)
+
+	if is_new_direction or is_new_action:
+		on_new_direction_or_action(determined_state)
+
+	return determined_state
+
+func on_new_action(_determined_state) -> void:
+	pass
+
+func on_new_direction(_determined_state) -> void:
+	pass
+
+func on_new_direction_or_action(determined_state) -> void:
+	play_animation(determined_state.animation)
+
+static func sprite_coordinates_sequential(size: Vector2, from_coordinate: Vector2, count: int, offset=Vector2.ZERO):
+	var coordinates: Array[Vector2] = [from_coordinate];
+	for n in range(1, count):
+		coordinates.push_back(Vector2(from_coordinate.x + n, from_coordinate.y))
+	return {size = size, coordinates = coordinates, offset = offset}
+
+static func sprite_coordinates_non_sequential(size: Vector2, from_coordinate: Vector2, x_offsets: Array[int], offset=Vector2.ZERO):
+	var coordinates: Array[Vector2] = [];
+	for n in x_offsets:
+		coordinates.push_back(Vector2(from_coordinate.x + n, from_coordinate.y))
+	return {size = size, coordinates = coordinates, offset = offset}
+
+func select_random_looks():
+	var possible_Bodies: Array = SPRITESHEETS.BODY.keys()
+	var random_BODY = possible_Bodies[rng.randi_range(0, possible_Bodies.size() - 1)]
+	self.selected_spritesheet_body = SPRITESHEETS.BODY.get(random_BODY)
+
+	var possible_Wounds: Array = SPRITESHEETS.WOUND.keys()
+	var random_WOUND = possible_Wounds[rng.randi_range(0, possible_Wounds.size() - 1)]
+	self.selected_spritesheet_wound = SPRITESHEETS.WOUND.get(random_WOUND)
+
+	var possible_Belts: Array = SPRITESHEETS.BELT.keys()
+	var random_BELT = possible_Belts[rng.randi_range(0, possible_Belts.size() - 1)]
+	self.selected_spritesheet_belt = SPRITESHEETS.BELT.get(random_BELT)
+
+	var possible_Pants: Array = SPRITESHEETS.PANTS.keys()
+	var random_PANTS = possible_Pants[rng.randi_range(0, possible_Pants.size() - 1)]
+	self.selected_spritesheet_pants = SPRITESHEETS.PANTS.get(random_PANTS)
+
+	var possible_Shirts: Array = SPRITESHEETS.SHIRT.keys()
+	var random_SHIRT = possible_Shirts[rng.randi_range(0, possible_Shirts.size() - 1)]
+	self.selected_spritesheet_shirt = SPRITESHEETS.SHIRT.get(random_SHIRT)
+
+	var possible_Hairs: Array = SPRITESHEETS.HAIR.keys()
+	var random_HAIR = possible_Hairs[rng.randi_range(0, possible_Hairs.size() - 1)]
+	self.selected_spritesheet_hair = SPRITESHEETS.HAIR.get(random_HAIR)
+
+	var possible_Weapons: Array = SPRITESHEETS.WEAPON.keys()
+	var random_WEAPON = possible_Weapons[rng.randi_range(0, possible_Weapons.size() - 1)]
+	self.selected_spritesheet_weapon = SPRITESHEETS.WEAPON.get(random_WEAPON)
+
+	self.scale = Vector2(rng.randf_range(0.75, 1.25), rng.randf_range(0.75, 1.8))
 
 func init_all_animated_sprites():
-	init_animated_sprite(body_animated_sprite_2d, SELECTED_SPRITESHEETS.BODY, ANIMATION_SPRITESHEET_COORDINATES)
-	init_animated_sprite(wound_animated_sprite_2d, SELECTED_SPRITESHEETS.WOUND, ANIMATION_SPRITESHEET_COORDINATES)
-	init_animated_sprite(belt_animated_sprite_2d, SELECTED_SPRITESHEETS.BELT, ANIMATION_SPRITESHEET_COORDINATES)
-	init_animated_sprite(pants_animated_sprite_2d, SELECTED_SPRITESHEETS.PANTS, ANIMATION_SPRITESHEET_COORDINATES)
-	init_animated_sprite(shirt_animated_sprite_2d, SELECTED_SPRITESHEETS.SHIRT, ANIMATION_SPRITESHEET_COORDINATES)
-	init_animated_sprite(hair_animated_sprite_2d, SELECTED_SPRITESHEETS.HAIR, ANIMATION_SPRITESHEET_COORDINATES)
-	init_animated_sprite(weapon_animated_sprite_2d, SELECTED_SPRITESHEETS.WEAPON, ANIMATION_SPRITESHEET_COORDINATES)
+	self.init_animated_sprite(self.body_animated_sprite_2d, self.selected_spritesheet_body, self.animation_spritesheet_coordinates)
+	self.init_animated_sprite(self.wound_animated_sprite_2d, self.selected_spritesheet_wound, self.animation_spritesheet_coordinates)
+	self.init_animated_sprite(self.belt_animated_sprite_2d, self.selected_spritesheet_belt, self.animation_spritesheet_coordinates)
+	self.init_animated_sprite(self.pants_animated_sprite_2d, self.selected_spritesheet_pants, self.animation_spritesheet_coordinates)
+	self.init_animated_sprite(self.shirt_animated_sprite_2d, self.selected_spritesheet_shirt, self.animation_spritesheet_coordinates)
+	self.init_animated_sprite(self.hair_animated_sprite_2d, self.selected_spritesheet_hair, self.animation_spritesheet_coordinates)
+	self.init_animated_sprite(self.weapon_animated_sprite_2d, self.selected_spritesheet_weapon, self.animation_spritesheet_coordinates)
 	play_animation('WALK_LEFT')
 
 func init_animated_sprite(animated_sprite: AnimatedSprite2D, sprite_sheet: Texture2D, animations_coordinates: Dictionary):
 	# cleanup
-	for i in animated_sprite.sprite_frames.animations:
-		animated_sprite.sprite_frames.remove_animation(i.name)
+	animated_sprite.sprite_frames = SpriteFrames.new()
 
 	# for each animation to create
 	for key in animations_coordinates:
@@ -314,7 +351,7 @@ func init_animated_sprite(animated_sprite: AnimatedSprite2D, sprite_sheet: Textu
 				offset.y + (size.y * coordinate.y),
 				size.x,
 				size.y)
-			animated_sprite.sprite_frames.add_frame(key, tex, 0.5)
+			animated_sprite.sprite_frames.add_frame(key, tex, 0.4)
 
 func play_animation(animation_name: StringName):
 	body_animated_sprite_2d.play(animation_name)
@@ -324,16 +361,16 @@ func play_animation(animation_name: StringName):
 	shirt_animated_sprite_2d.play(animation_name)
 	hair_animated_sprite_2d.play(animation_name)
 	weapon_animated_sprite_2d.play(animation_name)
+	print(play_animation, body_animated_sprite_2d, body_animated_sprite_2d.sprite_frames)
 
 func move_to(new_target: Vector2):
 	self.move_target = new_target
 
 func _ready() -> void:
-	init_all_animated_sprites()
+	self.init_all_animated_sprites()
 
-# Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(_delta: float) -> void:
-	pass
+	run_state_machine(velocity)
 
 func _physics_process(_delta: float) -> void:
 	if (move_target != Vector2.ZERO):
@@ -346,8 +383,4 @@ func _physics_process(_delta: float) -> void:
 			velocity = Vector2.ZERO
 		else:
 			velocity = direction * max_speed;
-
-	var state = get_current_state(velocity, "")
-	play_animation(state.animation)
-
 	move_and_slide()
