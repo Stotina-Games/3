@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3 uid="uid://bju1kdd31tps2"]
+[gd_scene load_steps=18 format=3 uid="uid://bju1kdd31tps2"]
 
 [ext_resource type="PackedScene" uid="uid://vbbscy6ty36h" path="res://characters/_base_character.tscn" id="1_0mll2"]
 [ext_resource type="Script" path="res://scenes/main.gd" id="1_k47ek"]
@@ -6,8 +6,50 @@
 [ext_resource type="PackedScene" uid="uid://dh70fxbxh8uxo" path="res://characters/_base_ai_character.tscn" id="4_e13s8"]
 [ext_resource type="Resource" uid="uid://ci1y4fd34lrtm" path="res://resources/characters/player.tres" id="4_qqlgs"]
 [ext_resource type="Resource" uid="uid://7be2x2dmcvip" path="res://resources/spritesheets/body/body_light.tres" id="5_tcevv"]
-[ext_resource type="Resource" uid="uid://c8vefbh51s1r6" path="res://resources/characters/enemy_wolfman.tres" id="7_4rvh2"]
-[ext_resource type="Resource" uid="uid://5peld83t2a0l" path="res://resources/spritesheets/enemy_body/wolfman.tres" id="8_4ddcj"]
+[ext_resource type="Resource" uid="uid://dmxfcwxc0isit" path="res://resources/spritesheets/hair/spiked/spiked-blonde.tres" id="6_vsjn5"]
+[ext_resource type="Resource" uid="uid://dmdetnxb7iwee" path="res://resources/spritesheets/shirt/shirt-black.tres" id="7_cwe1a"]
+[ext_resource type="Resource" uid="uid://dubtd32ykga70" path="res://resources/spritesheets/pants/pants-black.tres" id="8_4nwwe"]
+[ext_resource type="Resource" uid="uid://bbcksjdgepsun" path="res://resources/spritesheets/enemy/ratman.tres" id="8_76vaj"]
+[ext_resource type="Resource" uid="uid://dg2eucqrq5i3j" path="res://resources/spritesheets/enemy/skeleton.tres" id="9_3hxpj"]
+[ext_resource type="Resource" uid="uid://das5c3mucppyy" path="res://resources/spritesheets/belt/sash_black.tres" id="9_6rugw"]
+[ext_resource type="Resource" uid="uid://bao00crfnmgfq" path="res://resources/spritesheets/enemy/frankenstain.tres" id="10_0gbt7"]
+[ext_resource type="Script" path="res://elements/TopDownCharacterBase.gd" id="11_3wsaa"]
+
+[sub_resource type="Resource" id="Resource_nqqi7"]
+script = ExtResource("11_3wsaa")
+name = &"Wolfman"
+type = 0
+max_speed = 160.0
+acceleration = 100.0
+health = 100.0
+health_regen = 0.1
+move_target = Vector2(0, 0)
+current_direction = 1
+current_action = 1
+
+[sub_resource type="Resource" id="Resource_14amb"]
+script = ExtResource("11_3wsaa")
+name = &"Wolfman"
+type = 0
+max_speed = 160.0
+acceleration = 100.0
+health = 100.0
+health_regen = 0.1
+move_target = Vector2(0, 0)
+current_direction = 1
+current_action = 1
+
+[sub_resource type="Resource" id="Resource_sc3rv"]
+script = ExtResource("11_3wsaa")
+name = &"Wolfman"
+type = 0
+max_speed = 160.0
+acceleration = 100.0
+health = 100.0
+health_regen = 0.1
+move_target = Vector2(0, 0)
+current_direction = 1
+current_action = 1
 
 [node name="main" type="Node2D"]
 script = ExtResource("1_k47ek")
@@ -39,20 +81,24 @@ position = Vector2(666, 436)
 script = ExtResource("3_4a1ng")
 definition = ExtResource("4_qqlgs")
 body_spritesheet = ExtResource("5_tcevv")
+hair_spritesheet = ExtResource("6_vsjn5")
+shirt_spritesheet = ExtResource("7_cwe1a")
+pants_spritesheet = ExtResource("8_4nwwe")
+belt_spritesheet = ExtResource("9_6rugw")
 
 [node name="ShowcaseEnemy_1" parent="." instance=ExtResource("4_e13s8")]
 position = Vector2(1156, 293)
-definition = ExtResource("7_4rvh2")
-body_spritesheet = ExtResource("8_4ddcj")
+definition = SubResource("Resource_nqqi7")
+body_spritesheet = ExtResource("8_76vaj")
 
 [node name="ShowcaseEnemy_2" parent="." instance=ExtResource("4_e13s8")]
 position = Vector2(1017, 171)
-definition = ExtResource("7_4rvh2")
-body_spritesheet = ExtResource("8_4ddcj")
+definition = SubResource("Resource_14amb")
+body_spritesheet = ExtResource("9_3hxpj")
 
 [node name="ShowcaseEnemy_3" parent="." instance=ExtResource("4_e13s8")]
 position = Vector2(1141, 605)
-definition = ExtResource("7_4rvh2")
-body_spritesheet = ExtResource("8_4ddcj")
+definition = SubResource("Resource_sc3rv")
+body_spritesheet = ExtResource("10_0gbt7")
 
 [connection signal="pressed" from="new_game" to="." method="_on_new_game_pressed"]
