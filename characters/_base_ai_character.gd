@@ -96,7 +96,9 @@ func _process_targeting_ai(_delta: float) -> void:
 		var direction_to_target = difference.normalized();
 		var direction_to_move = (direction_to_target) if (is_too_far) else (-direction_to_target)
 		var distance_to_move = distance - t.action_distance if (is_too_far) else (t.action_distance - distance)
-		self.move_to(global_position + (direction_to_move * distance_to_move))
+		var target = global_position + (direction_to_move * distance_to_move)
+		self.move_to(target)
+		run_state_machine(velocity)
 	else:
 		var action: TopDownCharacterBase.CharacterAction = t.action;
 		run_state_machine(velocity, action)

@@ -24,6 +24,9 @@ extends CharacterBody2D
 func _ready() -> void:
 	self.init_all_animated_sprites()
 
+func is_between(value, min_value, max_value):
+	return min_value <= value && value < max_value
+
 func run_state_machine(
 	velocity_of_character,
 	attempting_to_initiate_action: TopDownCharacterBase.CharacterAction=TopDownCharacterBase.CharacterAction.UNKNOWN,
@@ -32,24 +35,39 @@ func run_state_machine(
 	var direction: TopDownCharacterBase.CharacterDirection = definition.current_direction;
 	var action: TopDownCharacterBase.CharacterAction = definition.current_action;
 
-	var absVelocity = velocity_of_character.abs();
-	if absVelocity.x > absVelocity.y:
-		if velocity_of_character.x > 0:
-			direction = TopDownCharacterBase.CharacterDirection.RIGHT
-			action = TopDownCharacterBase.CharacterAction.WALK
-		elif velocity_of_character.x < 0:
-			direction = TopDownCharacterBase.CharacterDirection.LEFT
-			action = TopDownCharacterBase.CharacterAction.WALK
-	elif absVelocity.x < absVelocity.y:
-		if velocity_of_character.y > 0:
-			direction = TopDownCharacterBase.CharacterDirection.DOWN
-			action = TopDownCharacterBase.CharacterAction.WALK
-		elif velocity_of_character.y < 0:
-			direction = TopDownCharacterBase.CharacterDirection.UP
-			action = TopDownCharacterBase.CharacterAction.WALK
+	if velocity_of_character.x != 0 or velocity_of_character.y != 0:
+		action = TopDownCharacterBase.CharacterAction.WALK
 	else:
-		direction = definition.current_direction;
 		action = TopDownCharacterBase.CharacterAction.IDLE
+
+	if velocity_of_character.x > 0 and velocity_of_character.x > abs(velocity_of_character.y):
+		direction = TopDownCharacterBase.CharacterDirection.RIGHT
+	elif velocity_of_character.x < 0 and -velocity_of_character.x > abs(velocity_of_character.y):
+		direction = TopDownCharacterBase.CharacterDirection.LEFT
+	elif velocity_of_character.y > 0 and velocity_of_character.y > abs(velocity_of_character.x):
+		direction = TopDownCharacterBase.CharacterDirection.DOWN
+	elif velocity_of_character.y < 0 and -velocity_of_character.y > abs(velocity_of_character.x):
+		direction = TopDownCharacterBase.CharacterDirection.UP
+	else:
+		direction = definition.current_direction
+
+	# if absVelocity.x > absVelocity.y:
+	# 	if velocity_of_character.x > 0:
+	# 		direction = TopDownCharacterBase.CharacterDirection.RIGHT
+	# 		action = TopDownCharacterBase.CharacterAction.WALK
+	# 	elif velocity_of_character.x < 0:
+	# 		direction = TopDownCharacterBase.CharacterDirection.LEFT
+	# 		action = TopDownCharacterBase.CharacterAction.WALK
+	# elif absVelocity.x < absVelocity.y:
+	# 	if velocity_of_character.y > 0:
+	# 		direction = TopDownCharacterBase.CharacterDirection.DOWN
+	# 		action = TopDownCharacterBase.CharacterAction.WALK
+	# 	elif velocity_of_character.y < 0:
+	# 		direction = TopDownCharacterBase.CharacterDirection.UP
+	# 		action = TopDownCharacterBase.CharacterAction.WALK
+	# else:
+	# 	direction = definition.current_direction;
+	# 	action = TopDownCharacterBase.CharacterAction.IDLE
 
 	var was_idle = definition.current_action == TopDownCharacterBase.CharacterAction.IDLE
 	var was_walking = definition.current_action == TopDownCharacterBase.CharacterAction.WALK
@@ -197,7 +215,7 @@ func _process(_delta: float) -> void:
 
 func _physics_process(_delta: float) -> void:
 	if (definition.move_target != Vector2.ZERO):
-		var difference = definition.move_target - global_position
+		var difference = definition.move_target - self.global_position
 		var direction = (difference).normalized()
 		var distance = (difference).abs().length()
 		if (distance < 10):
@@ -206,4 +224,18 @@ func _physics_process(_delta: float) -> void:
 			velocity = Vector2.ZERO
 		else:
 			velocity = direction * definition.max_speed;
+			self.queue_redraw()
 	move_and_slide()
+
+func _draw() -> void:
+	if (definition.move_target != Vector2.ZERO):
+		draw_arrow_to(definition.move_target - global_position)
+
+func draw_arrow_to(target: Vector2, color: Color=Color.RED):
+	var head_length = 10.0
+	var head_angle = 0.3 # rad
+
+	draw_line(Vector2.ZERO, target, color)
+	var head: Vector2 = -target.normalized() * head_length
+	draw_line(target, target + head.rotated(head_angle), color)
+	draw_line(target, target + head.rotated( - head_angle), color)
