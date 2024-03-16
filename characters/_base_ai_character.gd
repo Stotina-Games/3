@@ -29,7 +29,7 @@ extends _BaseCharacter
 
 func add_action_target(
 	target: Node2D,
-	action: CHARACTER_ACTION,
+	action: TopDownCharacterBase.CharacterAction,
 	priority: float=- 1.0,
 	action_distance: int=- 1,
 	action_distance_tolerance: int=- 1,
@@ -37,10 +37,10 @@ func add_action_target(
 
 	print("add_action_target", self)
 
-	var action_str = CHARACTER_ACTION.keys()[action];
+	var action_str = TopDownCharacterBase.CharacterAction.keys()[action];
 	var id = action_str + "_" + str(target.get_instance_id());
 	self.targets[id] = {
-		action = CHARACTER_ACTION.IDLE,
+		action = TopDownCharacterBase.CharacterAction.IDLE,
 		priority = BASE_TARGET_PRIORITIES[action_str] if priority < 0 else priority,
 		target = target,
 		action_distance = BASE_ACTION_DISTANCES[action_str] if action_distance < 0 else action_distance,
@@ -49,8 +49,8 @@ func add_action_target(
 	if self.targets.size() > 50:
 		remove_tasks_with_least_priority(self.targets.size() - 10) # keep only 10 tasks
 
-func remove_action_target(target: Node2D, action: CHARACTER_ACTION):
-	var action_str = CHARACTER_ACTION.keys()[action]
+func remove_action_target(target: Node2D, action: TopDownCharacterBase.CharacterAction):
+	var action_str = TopDownCharacterBase.CharacterAction.keys()[action]
 	var id = action_str + "_" + str(target.get_instance_id())
 	targets.erase(id)
 
@@ -69,14 +69,14 @@ func remove_tasks_with_least_priority(count_to_remove):
 	targets = targets_to_keep
 
 func _ready() -> void:
-	add_action_target(self, CHARACTER_ACTION.IDLE)
+	add_action_target(self, TopDownCharacterBase.CharacterAction.IDLE)
 
 func _process(delta: float) -> void:
 	_process_targeting_ai(delta)
 
 func _process_targeting_ai(_delta: float) -> void:
 	if targets.size() < 1:
-		add_action_target(self, CHARACTER_ACTION.IDLE)
+		add_action_target(self, TopDownCharacterBase.CharacterAction.IDLE)
 
 	var keys = targets.keys()
 	var most_desired_key: String = keys[0]
@@ -98,5 +98,5 @@ func _process_targeting_ai(_delta: float) -> void:
 		var distance_to_move = distance - t.action_distance if (is_too_far) else (t.action_distance - distance)
 		self.move_to(global_position + (direction_to_move * distance_to_move))
 	else:
-		var action: CHARACTER_ACTION = t.action;
+		var action: TopDownCharacterBase.CharacterAction = t.action;
 		run_state_machine(velocity, action)

@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="TopDownSpritesheet" load_steps=3 format=3 uid="uid://d3s5khjl1h48t"]
+
+[ext_resource type="Script" path="res://elements/TopDownSpritesheet.gd" id="1_7n50t"]
+[ext_resource type="Resource" uid="uid://clvydm077jdma" path="res://resources/animation_coordinates.tres" id="2_wu24h"]
+
+[resource]
+script = ExtResource("1_7n50t")
+name = &"sash_orange"
+type = 2
+spritesheet_coordinates = ExtResource("2_wu24h")

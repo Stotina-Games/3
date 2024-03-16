@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="TopDownSpritesheet" load_steps=4 format=3 uid="uid://dg2eucqrq5i3j"]
+
+[ext_resource type="Script" path="res://elements/TopDownSpritesheet.gd" id="1_1eel5"]
+[ext_resource type="Resource" uid="uid://clvydm077jdma" path="res://resources/animation_coordinates.tres" id="2_ov6ha"]
+[ext_resource type="Texture2D" uid="uid://bgggpjin51tle" path="res://assets/characters/skeleton.png" id="2_ray2l"]
+
+[resource]
+script = ExtResource("1_1eel5")
+name = &"skeleton"
+type = 0
+spritesheet = ExtResource("2_ray2l")
+spritesheet_coordinates = ExtResource("2_ov6ha")

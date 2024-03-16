@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="TopDownSpritesheet" load_steps=4 format=3 uid="uid://bjjhj1a30sa6j"]
+
+[ext_resource type="Script" path="res://elements/TopDownSpritesheet.gd" id="1_tbfdj"]
+[ext_resource type="Resource" uid="uid://clvydm077jdma" path="res://resources/animation_coordinates.tres" id="2_mtkb4"]
+[ext_resource type="Texture2D" uid="uid://dhxijlbb0k6ly" path="res://assets/characters/player/hair/player-hair-curly-redhead.png" id="2_u7g8a"]
+
+[resource]
+script = ExtResource("1_tbfdj")
+name = &"curly-redhead"
+type = 5
+spritesheet = ExtResource("2_u7g8a")
+spritesheet_coordinates = ExtResource("2_mtkb4")

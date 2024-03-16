@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="TopDownSpritesheet" load_steps=4 format=3 uid="uid://clqlqev0jcbx"]
+
+[ext_resource type="Script" path="res://elements/TopDownSpritesheet.gd" id="1_8fthx"]
+[ext_resource type="Resource" uid="uid://clvydm077jdma" path="res://resources/animation_coordinates.tres" id="2_gutt1"]
+[ext_resource type="Texture2D" uid="uid://c5jmxnq4d4q7t" path="res://assets/characters/player/clothes/player-clothes-shirt-longsleeve-white.png" id="2_tmw5i"]
+
+[resource]
+script = ExtResource("1_8fthx")
+name = &"shirt-white"
+type = 4
+spritesheet = ExtResource("2_tmw5i")
+spritesheet_coordinates = ExtResource("2_gutt1")

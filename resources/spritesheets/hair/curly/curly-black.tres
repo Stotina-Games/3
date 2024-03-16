@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="TopDownSpritesheet" load_steps=4 format=3 uid="uid://b7bku2nfaxhpg"]
+
+[ext_resource type="Script" path="res://elements/TopDownSpritesheet.gd" id="1_s6t4l"]
+[ext_resource type="Texture2D" uid="uid://4ywav0cxfx6x" path="res://assets/characters/player/hair/player-hair-curly-black.png" id="2_6milv"]
+[ext_resource type="Resource" uid="uid://clvydm077jdma" path="res://resources/animation_coordinates.tres" id="2_7u1at"]
+
+[resource]
+script = ExtResource("1_s6t4l")
+name = &"curly-black"
+type = 5
+spritesheet = ExtResource("2_6milv")
+spritesheet_coordinates = ExtResource("2_7u1at")

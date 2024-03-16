@@ -11,26 +11,16 @@ const SKELETON = preload ("res://assets/characters/skeleton.png")
 const FLYING_WOLFMAN = preload ("res://assets/characters/flying-wolfman.png")
 
 func change_player_looks():
-	showcase_player.select_random_looks()
 	showcase_player.init_all_animated_sprites()
 
 func setup_enemies():
-	showcase_enemy_1.max_speed = 140
-	showcase_enemy_1.selected_spritesheet_body = MINOTAUR
-	showcase_enemy_1.selected_spritesheet_weapon = _BaseCharacter.SPRITESHEETS.WEAPON.FLAIL
-	showcase_enemy_1.add_action_target(showcase_player, _BaseCharacter.CHARACTER_ACTION.SLASH, 1, 75)
+	showcase_enemy_1.add_action_target(showcase_player, TopDownCharacterBase.CharacterAction.SLASH, 1, 75)
 	showcase_enemy_1.init_all_animated_sprites()
 
-	showcase_enemy_2.max_speed = 170
-	showcase_enemy_2.selected_spritesheet_body = SKELETON
-	showcase_enemy_2.selected_spritesheet_weapon = _BaseCharacter.SPRITESHEETS.WEAPON.SLINGSHOT
-	showcase_enemy_2.add_action_target(showcase_player, _BaseCharacter.CHARACTER_ACTION.SHOOT, 1, 150)
+	showcase_enemy_2.add_action_target(showcase_player, TopDownCharacterBase.CharacterAction.SHOOT, 1, 150)
 	showcase_enemy_2.init_all_animated_sprites()
 
-	showcase_enemy_3.max_speed = 170
-	showcase_enemy_3.selected_spritesheet_body = FLYING_WOLFMAN
-	showcase_enemy_3.selected_spritesheet_weapon = _BaseCharacter.SPRITESHEETS.WEAPON.STAFF_S
-	showcase_enemy_3.add_action_target(showcase_player, _BaseCharacter.CHARACTER_ACTION.INTERACT, 1, 180)
+	showcase_enemy_3.add_action_target(showcase_player, TopDownCharacterBase.CharacterAction.INTERACT, 1, 180)
 	showcase_enemy_3.init_all_animated_sprites()
 
 func _ready() -> void:

@@ -1,141 +1,15 @@
 class_name _BaseCharacter
 extends CharacterBody2D
 
-enum CHARACTER_ACTION {
-	UNKNOWN,
-	IDLE,
-	CAST,
-	TRUST,
-	WALK,
-	SLASH,
-	SHOOT,
-	DIE,
-	LAY_ON_GROUND,
-	GET_UP,
-	INTERACT,
-}
+@export var definition: TopDownCharacterBase
 
-enum CHARACTER_DIRECTION {UP, DOWN, LEFT, RIGHT}
-
-static var SPRITESHEETS = {
-	BODY = {
-		PLAYER_BODY_LIGHT = preload ("res://assets/characters/player/player-body-light.png"),
-		PLAYER_BODY_AMBER = preload ("res://assets/characters/player/player-body-amber.png"),
-		PLAYER_BODY_OLIVE = preload ("res://assets/characters/player/player-body-olive.png"),
-		PLAYER_BODY_BLACK = preload ("res://assets/characters/player/player-body-black.png"),
-	},
-
-	WOUND = {
-		NONE = null,
-		PLAYER_WOUND_ARM = preload ("res://assets/characters/player/wounds/player-wound-arm.png"),
-		PLAYER_WOUND_EYE = preload ("res://assets/characters/player/wounds/player-wound-eye.png"),
-		PLAYER_WOUND_MOUTH = preload ("res://assets/characters/player/wounds/player-wound-mouth.png"),
-		PLAYER_WOUND_RIBS = preload ("res://assets/characters/player/wounds/player-wound-ribs.png"),
-	},
-
-	BELT = {
-		NONE = null,
-		PLAYER_CLOTHES_BELT_BLACK = preload ("res://assets/characters/player/clothes/player-clothes-belt-black.png"),
-		PLAYER_CLOTHES_BELT_BROWN = preload ("res://assets/characters/player/clothes/player-clothes-belt-brown.png"),
-		PLAYER_CLOTHES_BELT_TAN = preload ("res://assets/characters/player/clothes/player-clothes-belt-tan.png"),
-		PLAYER_CLOTHES_BELT_WHITE = preload ("res://assets/characters/player/clothes/player-clothes-belt-white.png"),
-		PLAYER_CLOTHES_BELT_SASH_BLACK = preload ("res://assets/characters/player/clothes/player-clothes-belt-sash-black.png"),
-		PLAYER_CLOTHES_BELT_SASH_GREEN = preload ("res://assets/characters/player/clothes/player-clothes-belt-sash-green.png"),
-		PLAYER_CLOTHES_BELT_SASH_ORANGE = preload ("res://assets/characters/player/clothes/player-clothes-belt-sash-orange.png"),
-		PLAYER_CLOTHES_BELT_SASH_RED = preload ("res://assets/characters/player/clothes/player-clothes-belt-sash-red.png"),
-		PLAYER_CLOTHES_BELT_SASH_WHITE = preload ("res://assets/characters/player/clothes/player-clothes-belt-sash-white.png"),
-		PLAYER_CLOTHES_BELT_SASH_YELLOW = preload ("res://assets/characters/player/clothes/player-clothes-belt-sash-yellow.png"),
-	},
-
-	PANTS = {
-		NONE = null,
-		PLAYER_CLOTHES_PANTS_BLACK = preload ("res://assets/characters/player/clothes/player-clothes-pants-black.png"),
-		PLAYER_CLOTHES_PANTS_BLUE = preload ("res://assets/characters/player/clothes/player-clothes-pants-blue.png"),
-		PLAYER_CLOTHES_PANTS_BROWN = preload ("res://assets/characters/player/clothes/player-clothes-pants-brown.png"),
-		PLAYER_CLOTHES_PANTS_GRAY = preload ("res://assets/characters/player/clothes/player-clothes-pants-gray.png"),
-		PLAYER_CLOTHES_PANTS_GREEN = preload ("res://assets/characters/player/clothes/player-clothes-pants-green.png"),
-		PLAYER_CLOTHES_PANTS_RED = preload ("res://assets/characters/player/clothes/player-clothes-pants-red.png"),
-		PLAYER_CLOTHES_PANTS_WHITE = preload ("res://assets/characters/player/clothes/player-clothes-pants-white.png"),
-		PLAYER_CLOTHES_PANTS_YELLOW = preload ("res://assets/characters/player/clothes/player-clothes-pants-yellow.png"),
-	},
-
-	SHIRT = {
-		NONE = null,
-		PLAYER_CLOTHES_SHIRT_LONGSLEEVE_BLACK = preload ("res://assets/characters/player/clothes/player-clothes-shirt-longsleeve-black.png"),
-		PLAYER_CLOTHES_SHIRT_LONGSLEEVE_BLUE = preload ("res://assets/characters/player/clothes/player-clothes-shirt-longsleeve-blue.png"),
-		PLAYER_CLOTHES_SHIRT_LONGSLEEVE_BROWN = preload ("res://assets/characters/player/clothes/player-clothes-shirt-longsleeve-brown.png"),
-		PLAYER_CLOTHES_SHIRT_LONGSLEEVE_GRAY = preload ("res://assets/characters/player/clothes/player-clothes-shirt-longsleeve-gray.png"),
-		PLAYER_CLOTHES_SHIRT_LONGSLEEVE_GREEN = preload ("res://assets/characters/player/clothes/player-clothes-shirt-longsleeve-green.png"),
-		PLAYER_CLOTHES_SHIRT_LONGSLEEVE_RED = preload ("res://assets/characters/player/clothes/player-clothes-shirt-longsleeve-red.png"),
-		PLAYER_CLOTHES_SHIRT_LONGSLEEVE_WHITE = preload ("res://assets/characters/player/clothes/player-clothes-shirt-longsleeve-white.png"),
-		PLAYER_CLOTHES_SHIRT_LONGSLEEVE_YELLOW = preload ("res://assets/characters/player/clothes/player-clothes-shirt-longsleeve-yellow.png"),
-	},
-
-	HAIR = {
-		NONE = null,
-		PLAYER_HAIR_BALDING_BLACK = preload ("res://assets/characters/player/hair/player-hair-balding-black.png"),
-		PLAYER_HAIR_BALDING_BLONDE = preload ("res://assets/characters/player/hair/player-hair-balding-blonde.png"),
-		PLAYER_HAIR_BALDING_BROWN = preload ("res://assets/characters/player/hair/player-hair-balding-brown.png"),
-		PLAYER_HAIR_BALDING_REDHEAD = preload ("res://assets/characters/player/hair/player-hair-balding-redhead.png"),
-		PLAYER_HAIR_BALDING_WHITE = preload ("res://assets/characters/player/hair/player-hair-balding-white.png"),
-		PLAYER_HAIR_BOB_BLACK = preload ("res://assets/characters/player/hair/player-hair-bob-black.png"),
-		PLAYER_HAIR_BOB_BLONDE = preload ("res://assets/characters/player/hair/player-hair-bob-blonde.png"),
-		PLAYER_HAIR_BOB_BROWN = preload ("res://assets/characters/player/hair/player-hair-bob-brown.png"),
-		PLAYER_HAIR_BOB_REDHEAD = preload ("res://assets/characters/player/hair/player-hair-bob-redhead.png"),
-		PLAYER_HAIR_BOB_WHITE = preload ("res://assets/characters/player/hair/player-hair-bob-white.png"),
-		PLAYER_HAIR_CURLY_BLACK = preload ("res://assets/characters/player/hair/player-hair-curly-black.png"),
-		PLAYER_HAIR_CURLY_BLONDE = preload ("res://assets/characters/player/hair/player-hair-curly-blonde.png"),
-		PLAYER_HAIR_CURLY_BROWN = preload ("res://assets/characters/player/hair/player-hair-curly-brown.png"),
-		PLAYER_HAIR_CURLY_REDHEAD = preload ("res://assets/characters/player/hair/player-hair-curly-redhead.png"),
-		PLAYER_HAIR_CURLY_WHITE = preload ("res://assets/characters/player/hair/player-hair-curly-white.png"),
-		PLAYER_HAIR_JEWFRO_BLACK = preload ("res://assets/characters/player/hair/player-hair-jewfro-black.png"),
-		PLAYER_HAIR_JEWFRO_BLONDE = preload ("res://assets/characters/player/hair/player-hair-jewfro-blonde.png"),
-		PLAYER_HAIR_JEWFRO_BROWN = preload ("res://assets/characters/player/hair/player-hair-jewfro-brown.png"),
-		PLAYER_HAIR_JEWFRO_REDHEAD = preload ("res://assets/characters/player/hair/player-hair-jewfro-redhead.png"),
-		PLAYER_HAIR_JEWFRO_WHITE = preload ("res://assets/characters/player/hair/player-hair-jewfro-white.png"),
-		PLAYER_HAIR_SPIKED_BLACK = preload ("res://assets/characters/player/hair/player-hair-spiked-black.png"),
-		PLAYER_HAIR_SPIKED_BLONDE = preload ("res://assets/characters/player/hair/player-hair-spiked-blonde.png"),
-		PLAYER_HAIR_SPIKED_BROWN = preload ("res://assets/characters/player/hair/player-hair-spiked-brown.png"),
-		PLAYER_HAIR_SPIKED_LIBERTY_BLACK = preload ("res://assets/characters/player/hair/player-hair-spiked-liberty-black.png"),
-		PLAYER_HAIR_SPIKED_LIBERTY_BLONDE = preload ("res://assets/characters/player/hair/player-hair-spiked-liberty-blonde.png"),
-		PLAYER_HAIR_SPIKED_LIBERTY_BROWN = preload ("res://assets/characters/player/hair/player-hair-spiked-liberty-brown.png"),
-		PLAYER_HAIR_SPIKED_LIBERTY_REDHEAD = preload ("res://assets/characters/player/hair/player-hair-spiked-liberty-redhead.png"),
-		PLAYER_HAIR_SPIKED_LIBERTY_WHITE = preload ("res://assets/characters/player/hair/player-hair-spiked-liberty-white.png"),
-		PLAYER_HAIR_SPIKED_REDHEAD = preload ("res://assets/characters/player/hair/player-hair-spiked-redhead.png"),
-		PLAYER_HAIR_SPIKED_WHITE = preload ("res://assets/characters/player/hair/player-hair-spiked-white.png"),
-	},
-
-	WEAPON = {
-		NONE = null,
-		CANE = preload ("res://assets/characters/weapons/cane.png"),
-		CLUB = preload ("res://assets/characters/weapons/club.png"),
-		CROSSBOW = preload ("res://assets/characters/weapons/crossbow.png"),
-		DRAGON_SPEAR = preload ("res://assets/characters/weapons/dragon-spear.png"),
-		FLAIL = preload ("res://assets/characters/weapons/flail.png"),
-		GLOWSWORD_BLUE = preload ("res://assets/characters/weapons/glowsword-blue.png"),
-		GLOWSWORD_RED = preload ("res://assets/characters/weapons/glowsword-red.png"),
-		HALBERD = preload ("res://assets/characters/weapons/halberd.png"),
-		LONGSWORD_2 = preload ("res://assets/characters/weapons/longsword2.png"),
-		LONGSWORD = preload ("res://assets/characters/weapons/longsword.png"),
-		MACE = preload ("res://assets/characters/weapons/mace.png"),
-		RAPIER = preload ("res://assets/characters/weapons/rapier.png"),
-		SABER = preload ("res://assets/characters/weapons/saber.png"),
-		SCIMITAR = preload ("res://assets/characters/weapons/scimitar.png"),
-		SCYTHE = preload ("res://assets/characters/weapons/scythe.png"),
-		SLINGSHOT = preload ("res://assets/characters/weapons/slingshot.png"),
-		SPEAR = preload ("res://assets/characters/weapons/spear.png"),
-		STAFF_DIAMOND = preload ("res://assets/characters/weapons/staff-diamond.png"),
-		STAFF_GNARLED = preload ("res://assets/characters/weapons/staff-gnarled.png"),
-		STAFF_LOOP = preload ("res://assets/characters/weapons/staff-loop.png"),
-		STAFF_S = preload ("res://assets/characters/weapons/staff-S.png"),
-		STAFF_SIMPLE = preload ("res://assets/characters/weapons/staff-simple.png"),
-		TRIDENT = preload ("res://assets/characters/weapons/trident.png"),
-	}
-}
-
-@onready var move_target: Vector2 = Vector2.ZERO;
-
-@onready var max_speed: int = 200
+@export var body_spritesheet: TopDownSpritesheet
+@export var hair_spritesheet: TopDownSpritesheet
+@export var shirt_spritesheet: TopDownSpritesheet
+@export var pants_spritesheet: TopDownSpritesheet
+@export var belt_spritesheet: TopDownSpritesheet
+@export var wound_spritesheet: TopDownSpritesheet
+@export var weapon_spritesheet: TopDownSpritesheet
 
 @onready var rng = RandomNumberGenerator.new();
 
@@ -147,109 +21,64 @@ static var SPRITESHEETS = {
 @onready var wound_animated_sprite_2d: AnimatedSprite2D = $CompositeAnimatedSprite/Wound_AnimatedSprite2D
 @onready var weapon_animated_sprite_2d: AnimatedSprite2D = $CompositeAnimatedSprite/Weapon_AnimatedSprite2D
 
-@onready var selected_spritesheet_body: Texture2D
-@onready var selected_spritesheet_wound: Texture2D
-@onready var selected_spritesheet_belt: Texture2D
-@onready var selected_spritesheet_pants: Texture2D
-@onready var selected_spritesheet_shirt: Texture2D
-@onready var selected_spritesheet_hair: Texture2D
-@onready var selected_spritesheet_weapon: Texture2D
+func _ready() -> void:
+	self.init_all_animated_sprites()
 
-@onready var animation_spritesheet_coordinates = {
-	IDLE_UP = _BaseCharacter.sprite_coordinates_sequential(Vector2(64, 64), Vector2(0, 8), 1),
-	IDLE_LEFT = _BaseCharacter.sprite_coordinates_sequential(Vector2(64, 64), Vector2(0, 9), 1),
-	IDLE_DOWN = _BaseCharacter.sprite_coordinates_sequential(Vector2(64, 64), Vector2(0, 10), 1),
-	IDLE_RIGHT = _BaseCharacter.sprite_coordinates_sequential(Vector2(64, 64), Vector2(0, 11), 1),
-
-	CAST_UP = _BaseCharacter.sprite_coordinates_sequential(Vector2(64, 64), Vector2(0, 0), 7),
-	CAST_LEFT = _BaseCharacter.sprite_coordinates_sequential(Vector2(64, 64), Vector2(0, 1), 7),
-	CAST_DOWN = _BaseCharacter.sprite_coordinates_sequential(Vector2(64, 64), Vector2(0, 2), 7),
-	CAST_RIGHT = _BaseCharacter.sprite_coordinates_sequential(Vector2(64, 64), Vector2(0, 3), 7),
-
-	TRUST_UP = _BaseCharacter.sprite_coordinates_sequential(Vector2(64, 64), Vector2(0, 4), 8),
-	TRUST_LEFT = _BaseCharacter.sprite_coordinates_sequential(Vector2(64, 64), Vector2(0, 5), 8),
-	TRUST_DOWN = _BaseCharacter.sprite_coordinates_sequential(Vector2(64, 64), Vector2(0, 6), 8),
-	TRUST_RIGHT = _BaseCharacter.sprite_coordinates_sequential(Vector2(64, 64), Vector2(0, 7), 8),
-
-	WALK_UP = _BaseCharacter.sprite_coordinates_sequential(Vector2(64, 64), Vector2(0, 8), 9),
-	WALK_LEFT = _BaseCharacter.sprite_coordinates_sequential(Vector2(64, 64), Vector2(0, 9), 9),
-	WALK_DOWN = _BaseCharacter.sprite_coordinates_sequential(Vector2(64, 64), Vector2(0, 10), 9),
-	WALK_RIGHT = _BaseCharacter.sprite_coordinates_sequential(Vector2(64, 64), Vector2(0, 11), 9),
-
-	SLASH_UP = _BaseCharacter.sprite_coordinates_sequential(Vector2(64, 64), Vector2(0, 12), 6),
-	SLASH_LEFT = _BaseCharacter.sprite_coordinates_sequential(Vector2(64, 64), Vector2(0, 13), 6),
-	SLASH_DOWN = _BaseCharacter.sprite_coordinates_sequential(Vector2(64, 64), Vector2(0, 14), 6),
-	SLASH_RIGHT = _BaseCharacter.sprite_coordinates_sequential(Vector2(64, 64), Vector2(0, 15), 6),
-
-	SHOOT_UP = _BaseCharacter.sprite_coordinates_sequential(Vector2(64, 64), Vector2(0, 16), 13),
-	SHOOT_LEFT = _BaseCharacter.sprite_coordinates_sequential(Vector2(64, 64), Vector2(0, 17), 13),
-	SHOOT_DOWN = _BaseCharacter.sprite_coordinates_sequential(Vector2(64, 64), Vector2(0, 18), 13),
-	SHOOT_RIGHT = _BaseCharacter.sprite_coordinates_sequential(Vector2(64, 64), Vector2(0, 19), 13),
-
-	DIE_DOWN = _BaseCharacter.sprite_coordinates_sequential(Vector2(64, 64), Vector2(0, 20), 6),
-
-	LAY_ON_GROUND_DOWN = _BaseCharacter.sprite_coordinates_sequential(Vector2(64, 64), Vector2(5, 20), 1),
-
-	GET_UP_DOWN = _BaseCharacter.sprite_coordinates_non_sequential(Vector2(64, 64), Vector2(0, 20), [5, 4, 5, 4, 3, 2, 1, 0]),
-
-	INTERACT_UP = _BaseCharacter.sprite_coordinates_non_sequential(Vector2(64, 64), Vector2(0, 4), [0, 1, 2, 4, 4, 2, 4, 2, 3, 1]),
-	INTERACT_LEFT = _BaseCharacter.sprite_coordinates_non_sequential(Vector2(64, 64), Vector2(0, 5), [0, 1, 2, 4, 4, 2, 4, 2, 3, 1]),
-	INTERACT_DOWN = _BaseCharacter.sprite_coordinates_non_sequential(Vector2(64, 64), Vector2(0, 6), [0, 1, 2, 4, 4, 2, 4, 2, 3, 1]),
-	INTERACT_RIGHT = _BaseCharacter.sprite_coordinates_non_sequential(Vector2(64, 64), Vector2(0, 7), [0, 1, 2, 4, 4, 2, 4, 2, 3, 1]),
-}
-
-@onready var previous_direction: CHARACTER_DIRECTION = CHARACTER_DIRECTION.RIGHT
-@onready var previous_action: CHARACTER_ACTION = CHARACTER_ACTION.IDLE
-
-func run_state_machine(velocity_of_character, attempting_to_initiate_action: CHARACTER_ACTION=CHARACTER_ACTION.UNKNOWN, forced_action=CHARACTER_ACTION.UNKNOWN):
-	var direction: CHARACTER_DIRECTION = previous_direction;
-	var action: CHARACTER_ACTION = previous_action;
+func run_state_machine(
+	velocity_of_character,
+	attempting_to_initiate_action: TopDownCharacterBase.CharacterAction=TopDownCharacterBase.CharacterAction.UNKNOWN,
+	forced_action=TopDownCharacterBase.CharacterAction.UNKNOWN
+	):
+	var direction: TopDownCharacterBase.CharacterDirection = definition.current_direction;
+	var action: TopDownCharacterBase.CharacterAction = definition.current_action;
 
 	var absVelocity = velocity_of_character.abs();
 	if absVelocity.x > absVelocity.y:
 		if velocity_of_character.x > 0:
-			direction = CHARACTER_DIRECTION.RIGHT
-			action = CHARACTER_ACTION.WALK
+			direction = TopDownCharacterBase.CharacterDirection.RIGHT
+			action = TopDownCharacterBase.CharacterAction.WALK
 		elif velocity_of_character.x < 0:
-			direction = CHARACTER_DIRECTION.LEFT
-			action = CHARACTER_ACTION.WALK
+			direction = TopDownCharacterBase.CharacterDirection.LEFT
+			action = TopDownCharacterBase.CharacterAction.WALK
 	elif absVelocity.x < absVelocity.y:
 		if velocity_of_character.y > 0:
-			direction = CHARACTER_DIRECTION.DOWN
-			action = CHARACTER_ACTION.WALK
+			direction = TopDownCharacterBase.CharacterDirection.DOWN
+			action = TopDownCharacterBase.CharacterAction.WALK
 		elif velocity_of_character.y < 0:
-			direction = CHARACTER_DIRECTION.UP
-			action = CHARACTER_ACTION.WALK
+			direction = TopDownCharacterBase.CharacterDirection.UP
+			action = TopDownCharacterBase.CharacterAction.WALK
 	else:
-		direction = previous_direction;
-		action = CHARACTER_ACTION.IDLE
+		direction = definition.current_direction;
+		action = TopDownCharacterBase.CharacterAction.IDLE
 
-	var is_able_to_initiate_action = previous_action == CHARACTER_ACTION.IDLE or previous_action == CHARACTER_ACTION.WALK;
+	var was_idle = definition.current_action == TopDownCharacterBase.CharacterAction.IDLE
+	var was_walking = definition.current_action == TopDownCharacterBase.CharacterAction.WALK
+	var is_able_to_initiate_action = was_idle or was_walking
 
 	if is_able_to_initiate_action:
-		if (attempting_to_initiate_action == CHARACTER_ACTION.CAST):
-			action = CHARACTER_ACTION.CAST
-		elif (attempting_to_initiate_action == CHARACTER_ACTION.TRUST):
-			action = CHARACTER_ACTION.TRUST
-		elif (attempting_to_initiate_action == CHARACTER_ACTION.SLASH):
-			action = CHARACTER_ACTION.SLASH
-		elif (attempting_to_initiate_action == CHARACTER_ACTION.SHOOT):
-			action = CHARACTER_ACTION.SHOOT
-		elif (attempting_to_initiate_action == CHARACTER_ACTION.INTERACT):
-			action = CHARACTER_ACTION.INTERACT
+		if (attempting_to_initiate_action == TopDownCharacterBase.CharacterAction.CAST):
+			action = TopDownCharacterBase.CharacterAction.CAST
+		elif (attempting_to_initiate_action == TopDownCharacterBase.CharacterAction.TRUST):
+			action = TopDownCharacterBase.CharacterAction.TRUST
+		elif (attempting_to_initiate_action == TopDownCharacterBase.CharacterAction.SLASH):
+			action = TopDownCharacterBase.CharacterAction.SLASH
+		elif (attempting_to_initiate_action == TopDownCharacterBase.CharacterAction.SHOOT):
+			action = TopDownCharacterBase.CharacterAction.SHOOT
+		elif (attempting_to_initiate_action == TopDownCharacterBase.CharacterAction.INTERACT):
+			action = TopDownCharacterBase.CharacterAction.INTERACT
 
-	if forced_action != CHARACTER_ACTION.UNKNOWN:
+	if forced_action != TopDownCharacterBase.CharacterAction.UNKNOWN:
 		action = forced_action
 
-	if action == CHARACTER_ACTION.DIE or action == CHARACTER_ACTION.LAY_ON_GROUND or action == CHARACTER_ACTION.GET_UP:
-		direction = CHARACTER_DIRECTION.DOWN
+	if action == TopDownCharacterBase.CharacterAction.DIE or action == TopDownCharacterBase.CharacterAction.LAY_ON_GROUND or action == TopDownCharacterBase.CharacterAction.GET_UP:
+		direction = TopDownCharacterBase.CharacterDirection.DOWN
 
-	var is_new_action = action != previous_action
-	var is_new_direction = direction != previous_direction
+	var is_new_action = action != definition.current_action
+	var is_new_direction = direction != definition.current_direction
 
-	previous_action = action
-	previous_direction = direction
-	var animation = CHARACTER_ACTION.keys()[action] + "_" + CHARACTER_DIRECTION.keys()[direction];
+	definition.current_action = action
+	definition.current_direction = direction
+	var animation = TopDownCharacterBase.CharacterAction.keys()[action] + "_" + TopDownCharacterBase.CharacterDirection.keys()[direction];
 
 	var determined_state = {
 		action = action,
@@ -279,68 +108,53 @@ func on_new_direction(_determined_state) -> void:
 func on_new_direction_or_action(determined_state) -> void:
 	play_animation(determined_state.animation)
 
-static func sprite_coordinates_sequential(size: Vector2, from_coordinate: Vector2, count: int, offset=Vector2.ZERO):
-	var coordinates: Array[Vector2] = [from_coordinate];
-	for n in range(1, count):
-		coordinates.push_back(Vector2(from_coordinate.x + n, from_coordinate.y))
-	return {size = size, coordinates = coordinates, offset = offset}
-
-static func sprite_coordinates_non_sequential(size: Vector2, from_coordinate: Vector2, x_offsets: Array[int], offset=Vector2.ZERO):
-	var coordinates: Array[Vector2] = [];
-	for n in x_offsets:
-		coordinates.push_back(Vector2(from_coordinate.x + n, from_coordinate.y))
-	return {size = size, coordinates = coordinates, offset = offset}
-
-func select_random_looks():
-	var possible_Bodies: Array = SPRITESHEETS.BODY.keys()
-	var random_BODY = possible_Bodies[rng.randi_range(0, possible_Bodies.size() - 1)]
-	self.selected_spritesheet_body = SPRITESHEETS.BODY.get(random_BODY)
-
-	var possible_Wounds: Array = SPRITESHEETS.WOUND.keys()
-	var random_WOUND = possible_Wounds[rng.randi_range(0, possible_Wounds.size() - 1)]
-	self.selected_spritesheet_wound = SPRITESHEETS.WOUND.get(random_WOUND)
-
-	var possible_Belts: Array = SPRITESHEETS.BELT.keys()
-	var random_BELT = possible_Belts[rng.randi_range(0, possible_Belts.size() - 1)]
-	self.selected_spritesheet_belt = SPRITESHEETS.BELT.get(random_BELT)
-
-	var possible_Pants: Array = SPRITESHEETS.PANTS.keys()
-	var random_PANTS = possible_Pants[rng.randi_range(0, possible_Pants.size() - 1)]
-	self.selected_spritesheet_pants = SPRITESHEETS.PANTS.get(random_PANTS)
-
-	var possible_Shirts: Array = SPRITESHEETS.SHIRT.keys()
-	var random_SHIRT = possible_Shirts[rng.randi_range(0, possible_Shirts.size() - 1)]
-	self.selected_spritesheet_shirt = SPRITESHEETS.SHIRT.get(random_SHIRT)
-
-	var possible_Hairs: Array = SPRITESHEETS.HAIR.keys()
-	var random_HAIR = possible_Hairs[rng.randi_range(0, possible_Hairs.size() - 1)]
-	self.selected_spritesheet_hair = SPRITESHEETS.HAIR.get(random_HAIR)
-
-	var possible_Weapons: Array = SPRITESHEETS.WEAPON.keys()
-	var random_WEAPON = possible_Weapons[rng.randi_range(0, possible_Weapons.size() - 1)]
-	self.selected_spritesheet_weapon = SPRITESHEETS.WEAPON.get(random_WEAPON)
-
-	self.scale = Vector2(rng.randf_range(0.75, 1.25), rng.randf_range(0.75, 1.8))
-
 func init_all_animated_sprites():
-	self.init_animated_sprite(self.body_animated_sprite_2d, self.selected_spritesheet_body, self.animation_spritesheet_coordinates)
-	self.init_animated_sprite(self.wound_animated_sprite_2d, self.selected_spritesheet_wound, self.animation_spritesheet_coordinates)
-	self.init_animated_sprite(self.belt_animated_sprite_2d, self.selected_spritesheet_belt, self.animation_spritesheet_coordinates)
-	self.init_animated_sprite(self.pants_animated_sprite_2d, self.selected_spritesheet_pants, self.animation_spritesheet_coordinates)
-	self.init_animated_sprite(self.shirt_animated_sprite_2d, self.selected_spritesheet_shirt, self.animation_spritesheet_coordinates)
-	self.init_animated_sprite(self.hair_animated_sprite_2d, self.selected_spritesheet_hair, self.animation_spritesheet_coordinates)
-	self.init_animated_sprite(self.weapon_animated_sprite_2d, self.selected_spritesheet_weapon, self.animation_spritesheet_coordinates)
+	cleanup_animated_sprites()
+
+	if (self.body_spritesheet):
+		self.init_animated_sprite(self.body_animated_sprite_2d, self.body_spritesheet.spritesheet, self.body_spritesheet.spritesheet_coordinates)
+	if (self.wound_spritesheet):
+		self.init_animated_sprite(self.wound_animated_sprite_2d, self.wound_spritesheet.spritesheet, self.wound_spritesheet.spritesheet_coordinates)
+	if (self.belt_spritesheet):
+		self.init_animated_sprite(self.belt_animated_sprite_2d, self.belt_spritesheet.spritesheet, self.belt_spritesheet.spritesheet_coordinates)
+	if (self.pants_spritesheet):
+		self.init_animated_sprite(self.pants_animated_sprite_2d, self.pants_spritesheet.spritesheet, self.pants_spritesheet.spritesheet_coordinates)
+	if (self.shirt_spritesheet):
+		self.init_animated_sprite(self.shirt_animated_sprite_2d, self.shirt_spritesheet.spritesheet, self.shirt_spritesheet.spritesheet_coordinates)
+	if (self.hair_spritesheet):
+		self.init_animated_sprite(self.hair_animated_sprite_2d, self.hair_spritesheet.spritesheet, self.hair_spritesheet.spritesheet_coordinates)
+	if (self.weapon_spritesheet):
+		self.init_animated_sprite(self.weapon_animated_sprite_2d, self.weapon_spritesheet.spritesheet, self.weapon_spritesheet.spritesheet_coordinates)
+
 	play_animation('WALK_LEFT')
 
-func init_animated_sprite(animated_sprite: AnimatedSprite2D, sprite_sheet: Texture2D, animations_coordinates: Dictionary):
-	# cleanup
-	animated_sprite.sprite_frames = SpriteFrames.new()
+func cleanup_animated_sprites():
+	self.body_animated_sprite_2d.sprite_frames = SpriteFrames.new()
+	self.wound_animated_sprite_2d.sprite_frames = SpriteFrames.new()
+	self.belt_animated_sprite_2d.sprite_frames = SpriteFrames.new()
+	self.pants_animated_sprite_2d.sprite_frames = SpriteFrames.new()
+	self.shirt_animated_sprite_2d.sprite_frames = SpriteFrames.new()
+	self.hair_animated_sprite_2d.sprite_frames = SpriteFrames.new()
+	self.weapon_animated_sprite_2d.sprite_frames = SpriteFrames.new()
+
+func init_animated_sprite(animated_sprite: AnimatedSprite2D, sprite_sheet: Texture2D, animations_coordinates: TopDownSpritesheetAnimationCoordinates):
+	# animation list
+	var animationNames = [
+		"IDLE_UP", "IDLE_LEFT", "IDLE_DOWN", "IDLE_RIGHT",
+		"CAST_UP", "CAST_LEFT", "CAST_DOWN", "CAST_RIGHT",
+		"TRUST_UP", "TRUST_LEFT", "TRUST_DOWN", "TRUST_RIGHT",
+		"WALK_UP", "WALK_LEFT", "WALK_DOWN", "WALK_RIGHT",
+		"SLASH_UP", "SLASH_LEFT", "SLASH_DOWN", "SLASH_RIGHT",
+		"SHOOT_UP", "SHOOT_LEFT", "SHOOT_DOWN", "SHOOT_RIGHT",
+		"DIE_DOWN", "LAY_ON_GROUND_DOWN", "GET_UP_DOWN",
+		"INTERACT_UP", "INTERACT_LEFT", "INTERACT_DOWN", "INTERACT_RIGHT",
+	]
 
 	# for each animation to create
-	for key in animations_coordinates:
-		var offset: Vector2 = animations_coordinates[key].offset
-		var size: Vector2 = animations_coordinates[key].size
-		var coordinates: Array[Vector2] = animations_coordinates[key].coordinates
+	for key in animationNames:
+		var offset: Vector2 = animations_coordinates.spritesheet_sector_offset
+		var size: Vector2 = animations_coordinates.spritesheet_sector_size
+		var coordinates: Array[Vector2] = animations_coordinates['animation_coordinates_' + key]
 		animated_sprite.sprite_frames.add_animation(key);
 
 		for coordinate: Vector2 in coordinates:
@@ -354,33 +168,42 @@ func init_animated_sprite(animated_sprite: AnimatedSprite2D, sprite_sheet: Textu
 			animated_sprite.sprite_frames.add_frame(key, tex, 0.4)
 
 func play_animation(animation_name: StringName):
-	body_animated_sprite_2d.play(animation_name)
-	wound_animated_sprite_2d.play(animation_name)
-	belt_animated_sprite_2d.play(animation_name)
-	pants_animated_sprite_2d.play(animation_name)
-	shirt_animated_sprite_2d.play(animation_name)
-	hair_animated_sprite_2d.play(animation_name)
-	weapon_animated_sprite_2d.play(animation_name)
-	print(play_animation, body_animated_sprite_2d, body_animated_sprite_2d.sprite_frames)
+	if (self.body_animated_sprite_2d.sprite_frames.has_animation(animation_name)):
+		self.body_animated_sprite_2d.play(animation_name)
+
+	if (self.wound_animated_sprite_2d.sprite_frames.has_animation(animation_name)):
+		self.wound_animated_sprite_2d.play(animation_name)
+
+	if (self.belt_animated_sprite_2d.sprite_frames.has_animation(animation_name)):
+		self.belt_animated_sprite_2d.play(animation_name)
+
+	if (self.pants_animated_sprite_2d.sprite_frames.has_animation(animation_name)):
+		self.pants_animated_sprite_2d.play(animation_name)
+
+	if (self.shirt_animated_sprite_2d.sprite_frames.has_animation(animation_name)):
+		self.shirt_animated_sprite_2d.play(animation_name)
+
+	if (self.hair_animated_sprite_2d.sprite_frames.has_animation(animation_name)):
+		self.hair_animated_sprite_2d.play(animation_name)
+
+	if (self.weapon_animated_sprite_2d.sprite_frames.has_animation(animation_name)):
+		self.weapon_animated_sprite_2d.play(animation_name)
 
 func move_to(new_target: Vector2):
-	self.move_target = new_target
-
-func _ready() -> void:
-	self.init_all_animated_sprites()
+	self.definition.move_target = new_target
 
 func _process(_delta: float) -> void:
 	run_state_machine(velocity)
 
 func _physics_process(_delta: float) -> void:
-	if (move_target != Vector2.ZERO):
-		var difference = move_target - global_position;
+	if (definition.move_target != Vector2.ZERO):
+		var difference = definition.move_target - global_position
 		var direction = (difference).normalized()
-		var distance = (difference).abs().length();
+		var distance = (difference).abs().length()
 		if (distance < 10):
 			# Already There
-			move_target = Vector2.ZERO
+			definition.move_target = Vector2.ZERO
 			velocity = Vector2.ZERO
 		else:
-			velocity = direction * max_speed;
+			velocity = direction * definition.max_speed;
 	move_and_slide()

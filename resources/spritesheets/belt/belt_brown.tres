@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="TopDownSpritesheet" load_steps=3 format=3 uid="uid://cha5urjm8d4am"]
+
+[ext_resource type="Script" path="res://elements/TopDownSpritesheet.gd" id="1_36j75"]
+[ext_resource type="Texture2D" uid="uid://53k03pp87u17" path="res://assets/characters/player/clothes/player-clothes-belt-brown.png" id="2_x37ym"]
+
+[resource]
+script = ExtResource("1_36j75")
+name = &"belt_brown"
+type = 0
+spritesheet = ExtResource("2_x37ym")

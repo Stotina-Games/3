@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="TopDownSpritesheet" load_steps=4 format=3 uid="uid://caolxcm2ce5n7"]
+
+[ext_resource type="Script" path="res://elements/TopDownSpritesheet.gd" id="1_w7011"]
+[ext_resource type="Texture2D" uid="uid://ddfwi823ro2dp" path="res://assets/characters/player/clothes/player-clothes-pants-orange.png" id="2_320gk"]
+[ext_resource type="Resource" uid="uid://clvydm077jdma" path="res://resources/animation_coordinates.tres" id="2_wpd0d"]
+
+[resource]
+script = ExtResource("1_w7011")
+name = &"pants-orange"
+type = 3
+spritesheet = ExtResource("2_320gk")
+spritesheet_coordinates = ExtResource("2_wpd0d")

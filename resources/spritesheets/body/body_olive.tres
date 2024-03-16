@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="TopDownSpritesheet" load_steps=4 format=3 uid="uid://d0nni3xtlsi2n"]
+
+[ext_resource type="Script" path="res://elements/TopDownSpritesheet.gd" id="1_wbrio"]
+[ext_resource type="Texture2D" uid="uid://cucl5eya71a7d" path="res://assets/characters/player/player-body-olive.png" id="2_oajn3"]
+[ext_resource type="Resource" uid="uid://clvydm077jdma" path="res://resources/animation_coordinates.tres" id="3_sd4nj"]
+
+[resource]
+script = ExtResource("1_wbrio")
+name = &"Body_Olive"
+type = 0
+spritesheet = ExtResource("2_oajn3")
+spritesheet_coordinates = ExtResource("3_sd4nj")

@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="TopDownCharacterBase" load_steps=2 format=3 uid="uid://c8vefbh51s1r6"]
+
+[ext_resource type="Script" path="res://elements/TopDownCharacterBase.gd" id="1_dt1nl"]
+
+[resource]
+script = ExtResource("1_dt1nl")
+name = &"Wolfman"
+type = 0
+max_speed = 160.0
+acceleration = 100.0
+health = 100.0
+health_regen = 0.1
+move_target = Vector2(0, 0)
+current_direction = 1
+current_action = 1

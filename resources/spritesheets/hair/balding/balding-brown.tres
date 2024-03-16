@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="TopDownSpritesheet" load_steps=4 format=3 uid="uid://cqkmb76mo7sjr"]
+
+[ext_resource type="Script" path="res://elements/TopDownSpritesheet.gd" id="1_y7i4t"]
+[ext_resource type="Resource" uid="uid://clvydm077jdma" path="res://resources/animation_coordinates.tres" id="2_x7u7d"]
+[ext_resource type="Texture2D" uid="uid://yimfiqfdcasl" path="res://assets/characters/player/hair/player-hair-balding-brown.png" id="2_xxq1m"]
+
+[resource]
+script = ExtResource("1_y7i4t")
+name = &"balding-brown"
+type = 5
+spritesheet = ExtResource("2_xxq1m")
+spritesheet_coordinates = ExtResource("2_x7u7d")
